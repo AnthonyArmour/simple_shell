@@ -4,11 +4,13 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <sys/types.h>
+#include <sys/wait.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <string.h>
 #include <errno.h>
+/* global variables */
 /* Prototypes */
 int _putchar(char c);
 char *_strcpy(char *dest, char *src);
@@ -22,7 +24,7 @@ int append_text_to_file(const char *filename, char *text_content);
 */char *_strdup(char *str);
 char *read_Cmd(char *argv);
 void print_Prompt(void);
-void *_realloc(void *ptr, unsigned int old_size, unsigned int new_size);
+char *_realloc(char *ptr, unsigned int old_size, unsigned int new_size);
 char *_strcat(char *dest, char *src);
 void print_Prompt1(void);
 char *str_number(char *buf, unsigned int n);

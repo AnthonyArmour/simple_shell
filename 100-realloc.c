@@ -1,14 +1,16 @@
 #include "shell.h"
 /**
  * _realloc - reallocates mem
- * @ptr: void ptr
+ * @ptr: ptr
  * @old_size: un int
  * @new_size: un int
- * Return: void ptr
+ * Return: ptr
  */
-void *_realloc(void *ptr, unsigned int old_size, unsigned int new_size)
+
+char *_realloc(char *ptr, unsigned int old_size, unsigned int new_size)
 {
 	char *nptr;
+	int x = 0;
 
 	if (new_size == 0 && !ptr)
 	{
@@ -23,10 +25,12 @@ void *_realloc(void *ptr, unsigned int old_size, unsigned int new_size)
 		if (!ptr)
 			return (NULL);
 	}
-	nptr = ptr;
-	free(ptr);
 	nptr = malloc(new_size);
 	if (!nptr)
 		return (NULL);
+	for (; ptr[x]; x++)
+		nptr[x] = ptr[x];
+	nptr[x] = '\0';
+	free(ptr);
 	return (nptr);
 }
