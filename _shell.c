@@ -10,25 +10,39 @@ int err_Cnt = 0;
 int main(int argc, char *argv[], char *env[])
 {
 	char *command = NULL;
-	int ttrue = 1, cmd_Count = 0;
-	int id1 = fork();
-	int id2 = fork();
+	int ttrue = 1, cmd_Count = 0, mode;
 
 	(void)argc;
 	(void)env;
+	if ((mode = isatty(STDIN_FILENO)))
+                puts("Interactive mode!");
+        else
+	{
+                puts("Non-interactive mode!");
+	}
 	while (ttrue)
 	{
-		if (id == 0)
+		if (mode)
 			print_Prompt1();
-		else
-		{
-			while (wait(NULL) != -1)
-				;
-			command = read_Cmd(argv[0]);
-		}
+		command = read_Cmd(argv[0]);
 		cmd_Count = _strlen(command);
+		if (command[0] == '\0' || command[0] == '\n')
+		{
+			free(command);
+			continue;
+		}
+		if (strcmp(command, "exit\n") == 0)
+		{
+			free(command);
+			break;
+		}
 		if (cmd_Count != 0)
 			write(STDOUT_FILENO, command, cmd_Count);
+		if (!mode)
+		{
+			free(command);
+			break;
+		}
 	}
 	return (0);
 }
@@ -44,7 +58,9 @@ void print_Prompt1(void)
 
 	Wcheck = write(STDOUT_FILENO, buf, _strlen(buf));
 	if (Wcheck == -1)
-		Wcheck = write(STDOUT_FILENO, err, _strlen(err)), exit(10);
+	{
+		Wcheck = write(STDERR_FILENO, err, _strlen(err)), exit(10);
+	}
 }
 /**
  * read_Cmd - reads command into string
@@ -52,10 +68,11 @@ void print_Prompt1(void)
  */
 char *read_Cmd(char *argv)
 {
-	char buf[1024];
-	char *cmd_String = NULL;
-	char *err_Str, *temp, *err_Str2, *temp2;
-	int x = 0, xx = 0, rCheck = 0;
+	size_t bufsize = 1024;
+	ssize_t cmd_Check;
+	char *cmd_Str = NULL, *buf = NULL;
+	char *err_Str, *temp, *err_Str2, *temp2, *cmd_temp;
+	int ptr_len = 0, cmd_index = 0, buf_len = 0;
 	char *num_Buf;
 
 	num_Buf = malloc(10);
@@ -65,36 +82,52 @@ char *read_Cmd(char *argv)
 	temp2 = str_number(num_Buf, (unsigned int)err_Cnt);
 	err_Str2 = _strcat(temp2, ": ");
 	temp = _strcat(err_Str, err_Str2);
-	while((rCheck = read(STDIN_FILENO, buf, 1024)) > 0)
+	while(cmd_Check != -1)
 	{
-		if (!cmd_String)
-		{
-			cmd_String = malloc(rCheck + 1);
-			if (!cmd_String)
-			{
-				write(STDERR_FILENO, temp, _strlen(temp));
-				write(STDERR_FILENO, "Memory error", 12);
-				exit(11);
-			}
-			for (x = 0; x < rCheck; x++)
-				cmd_String[xx] = buf[x], xx++;
-			cmd_String[xx] = '\0', xx++;
-		}
+		cmd_Check = getline(&buf, &bufsize, stdin);
+		buf_len = _strlen(buf);
+		if (!cmd_Str)
+			cmd_Str = malloc(buf_len + 1);
 		else
 		{
-			cmd_String = _realloc(cmd_String, _strlen(cmd_String),
-			 _strlen(cmd_String) + rCheck);
-			if (!cmd_String)
-			{
-				write(STDERR_FILENO, temp, _strlen(temp));
-				write(STDERR_FILENO, "Memory error", 12);
-				exit(11);
-			}
-			for (x = 0; buf[x] != '\0'; x++)
-				cmd_String[xx] = buf[x];
-			cmd_String[xx] = buf[x];
+			cmd_temp = _realloc(cmd_Str, cmd_index, ptr_len);
+		        if (cmd_temp)
+				cmd_Str = cmd_temp;
+			else
+				free(cmd_Str), cmd_Str = NULL;
 		}
+		_strcpy(cmd_Str + ptr_len, buf);
+		if (buf[buf_len - 1] == '\n')
+		{
+			if (buf_len == 1 || buf[buf_len - 2] != '\\')
+				return (cmd_Str);
+			cmd_Str[ptr_len + buf_len - 2] = '\0';
+			buf_len -= 2;
+			print_Prompt2();
+		}
+		ptr_len += buf_len;
 	}
-	printf("Outside while loop\n");
-	return (cmd_String);
+	if (!cmd_Str)
+	{
+		write(STDERR_FILENO, temp, _strlen(temp));
+		write(STDERR_FILENO, "Memory error", 12);
+		exit(11);
+	}
+	return (cmd_Str);
+}
+/**
+ * print_Prompt2 - prints > prompt
+ * Return: void
+ */
+void print_Prompt2(void)
+{
+        char *buf = "> ";
+        int Wcheck;
+        char *err = "ERROR: Could not write prompt";
+
+        Wcheck = write(STDOUT_FILENO, buf, _strlen(buf));
+        if (Wcheck == -1)
+	{
+                Wcheck = write(STDERR_FILENO, err, _strlen(err)), exit(10);
+	}
 }
