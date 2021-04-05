@@ -23,10 +23,9 @@ listint_t *get_nodeint_at_index(listint_t *head, unsigned int index);
 int append_text_to_file(const char *filename, char *text_content);
 */char *_strdup(char *str);
 char *read_Cmd(char *argv);
-void print_Prompt(void);
 char *_realloc(char *ptr, unsigned int old_size, unsigned int new_size);
 char *_strcat(char *dest, char *src);
 void print_Prompt1(void);
 char *str_number(char *buf, unsigned int n);
-
+void print_Prompt2(void);
 #endif
