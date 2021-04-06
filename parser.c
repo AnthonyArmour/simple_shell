@@ -1,4 +1,5 @@
 #include "shell.h"
+#include <string.h>
 
 int main(void)
 {
@@ -19,7 +20,7 @@ int main(void)
 
 void cmdStrDimensions(char *cmd_Str, char *argv, int *cmd_Str_Len, int *cmd_Count)
 {
-	int cmd_Pos = 0, tmp_Len = 0;
+	int cmd_Pos = 0;
 
 	(void)argv;
 	if (cmd_Str == NULL)
@@ -28,58 +29,75 @@ void cmdStrDimensions(char *cmd_Str, char *argv, int *cmd_Str_Len, int *cmd_Coun
 	{
 		if (cmd_Str[cmd_Pos] == ';')
 		{
-			(*cmd_Count)++, cmd_Pos++;
-			if (tmp_Len > *cmd_Str_Len)
-				*cmd_Str_Len = tmp_Len;
-			tmp_Len = 0;
+			(*cmd_Count)++;
 			continue;
 		}
-		if (cmd_Str[cmd_Pos + 1] == '\0')
-		{
-			tmp_Len++;
-			if (tmp_Len > *cmd_Str_Len)
-				*cmd_Str_Len = tmp_Len;
-			tmp_Len = 0;
-		}
-	tmp_Len++;
+	(*cmd_Str_Len)++;
 	}
 	return;
 }
 
+/**
+ * _strtok - Returns next word of input string
+ * @str: The input string
+ * @index: Where we are in the input string
+ * @delim: Spaces, null bytes, semicolons
+ * Return: Next word of input string
+ */
+
+char *_strtok(char *str, int index, char delim)
+{
+	int x = 0, y = 0;
+	char *tok;
+
+	while (str[y + index] != '\0' && str[y + index] != delim)
+		y++;
+	tok = malloc(sizeof(char) * (y + 1));
+	if (!tok)
+		return (NULL);
+	for (x = 0; x < y; x++)
+		tok[x] = str[x + index];
+	tok[x] = '\0';
+	return (tok);
+}
+
+
 char **parser1(char *cmd_Str, char *argv)
 {
 	char **cmd_List;
-	int x = 0, size = 0, cmd_Pos = 0, cmd_Str_Len = 0, cmd_Count = 1;
-	int list_Index = 0;
+	char *tmp;
+	int x = 0, y = 0, xx = 0, cmd_Pos = 0, cmd_Str_Len = 0, cmd_Count = 1;
 
 	cmdStrDimensions(cmd_Str, argv, &cmd_Str_Len, &cmd_Count);
-	printf("Strlen = %d Count = %d cmd_str = %s\n", cmd_Str_Len, cmd_Count, cmd_Str);
-	size = ((sizeof(char *) * (cmd_Count + 1)));
-	cmd_List = (char **)malloc(size);
-	for (x = 0; cmd_List[x]; x++)
+	printf("Total command length = %d\n Total command count = %d\n", cmd_Str_Len, cmd_Count);
+	cmd_List = malloc(sizeof(char *) * cmd_Str_Len + cmd_Count); /*null bytes?*/
+	if (!cmd_List)
+		return (NULL);
+	printf("here\n");
+	while (cmd_Str[cmd_Pos])
 	{
-		cmd_List[x] = (char *)malloc(sizeof(char) * (cmd_Str_Len + 1));
-	}
-	x = 0;
-	for (cmd_Pos = 0; cmd_Str[cmd_Pos]; cmd_Pos++)
-	{
-		printf("Entered for loop\n");
-		cmd_List[list_Index][x] = cmd_Str[cmd_Pos];
 		if (cmd_Str[cmd_Pos] == ';')
-		{
-			printf("Entered ; if statement\n");
-			cmd_List[list_Index][x + 1] = '\0', list_Index++, x = 0;
 			cmd_Pos++;
-		}
-		if (cmd_Str[cmd_Pos + 1] == '\0')
+		else
 		{
-			printf("Entered 2nd if statement\n");
-			cmd_List[list_Index][x + 1] = '\0';
+			printf("Made it passed the ;\n");
+			y = 0;
+			tmp = _strtok(cmd_Str, cmd_Pos, ' ');
+			if (!tmp)
+				return (NULL);
+			while (tmp[y])
+				y++;
+			cmd_List[x] = malloc(sizeof(char) * (y + 1));
+			for (xx = 0; xx < y; xx++)
+				cmd_List[x][xx] = tmp[xx];
+			cmd_List[x][xx] = '\0';
+			if (tmp)
+				free(tmp);
+			x++, cmd_Pos += y;
 		}
 	}
+	cmd_List[x] = NULL;
 	for (x = 0; cmd_List[x]; x++)
-	{
 		printf("%s\n", cmd_List[x]);
-	}
 	return (cmd_List);
 }
