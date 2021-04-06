@@ -22,6 +22,8 @@ list_t *add_node(list_t **head, const char *str);
 listint_t *get_nodeint_at_index(listint_t *head, unsigned int index);
 int append_text_to_file(const char *filename, char *text_content);
 */char *_strdup(char *str);
+char **parser1(char *cmd_Str, char *argv);
+void cmdStrDimensions(char *cmd_Str, char *argv, int *cmd_Str_Len, int *cmd_Count);
 char *read_Cmd(char *argv);
 char *_realloc(char *ptr, unsigned int old_size, unsigned int new_size);
 char *_strcat(char *dest, char *src);
