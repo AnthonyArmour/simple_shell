@@ -43,6 +43,7 @@ int main(int argc, char *argv[], char *env[])
 			free(command);
 			break;
 		}
+		free(command);
 	}
 	return (0);
 }
@@ -100,7 +101,10 @@ char *read_Cmd(char *argv)
 		if (buf[buf_len - 1] == '\n')
 		{
 			if (buf_len == 1 || buf[buf_len - 2] != '\\')
+			{
+				free(buf), free(num_Buf);
 				return (cmd_Str);
+			}
 			cmd_Str[ptr_len + buf_len - 2] = '\0';
 			buf_len -= 2;
 			print_Prompt2();
@@ -113,6 +117,7 @@ char *read_Cmd(char *argv)
 		write(STDERR_FILENO, "Memory error", 12);
 		exit(11);
 	}
+	free(buf), free(num_Buf);
 	return (cmd_Str);
 }
 /**
