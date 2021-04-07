@@ -1,14 +1,20 @@
 #include "shell.h"
 #include <string.h>
 
-int main(void)
+/*int main(void)
 {
-	/*cmdStrDimensions("     mkdir", "argv", &cmd_Str_Len, &cmd_Count);
-	*/parser1("mkdir file1; mkdir file3; mkdir file5; mkdir file10", "argv");
-	
+	char *cmd = NULL;
+	char **temp;
+	int x = 0;
+
+	printf("Prompt: ");
+	cmd = read_Cmd("argv");
+	temp = parser1(cmd, "argv");
+	for (x = 0; temp[x]; x++)
+		printf("command is: %s\n", temp[x]);
 	return (0);
 }
-
+*/
 /**
  * cmdStrDimensions - Calculates dimensions of passed arguments/commands
  * @cmd_Str: Commands/arguments passed
@@ -69,20 +75,17 @@ char **parser1(char *cmd_Str, char *argv)
 	int x = 0, y = 0, xx = 0, cmd_Pos = 0, cmd_Str_Len = 0, cmd_Count = 1;
 
 	cmdStrDimensions(cmd_Str, argv, &cmd_Str_Len, &cmd_Count);
-	printf("Total command length = %d\n Total command count = %d\n", cmd_Str_Len, cmd_Count);
 	cmd_List = malloc(sizeof(char *) * cmd_Str_Len + cmd_Count); /*null bytes?*/
 	if (!cmd_List)
 		return (NULL);
-	printf("here\n");
 	while (cmd_Str[cmd_Pos])
 	{
 		if (cmd_Str[cmd_Pos] == ';')
 			cmd_Pos++;
 		else
 		{
-			printf("Made it passed the ;\n");
 			y = 0;
-			tmp = _strtok(cmd_Str, cmd_Pos, ' ');
+			tmp = _strtok(cmd_Str, cmd_Pos, ';');
 			if (!tmp)
 				return (NULL);
 			while (tmp[y])
@@ -97,7 +100,5 @@ char **parser1(char *cmd_Str, char *argv)
 		}
 	}
 	cmd_List[x] = NULL;
-	for (x = 0; cmd_List[x]; x++)
-		printf("%s\n", cmd_List[x]);
 	return (cmd_List);
 }

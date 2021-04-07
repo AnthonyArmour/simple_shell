@@ -10,8 +10,10 @@ int err_Cnt = 0;
 int main(int argc, char *argv[], char *env[])
 {
 	char *command = NULL;
-	int ttrue = 1, cmd_Count = 0, mode;
+	int ttrue = 1, cmd_Count = 0, mode, x = 0;
+	char **Cmd = NULL;
 
+	(void)argv;
 	(void)argc;
 	(void)env;
 	if ((mode = isatty(STDIN_FILENO)))
@@ -24,7 +26,7 @@ int main(int argc, char *argv[], char *env[])
 	{
 		if (mode)
 			print_Prompt1();
-		command = read_Cmd(argv[0]);
+		command = read_Cmd("argv");
 		cmd_Count = _strlen(command);
 		if (command[0] == '\0' || command[0] == '\n')
 		{
@@ -37,7 +39,14 @@ int main(int argc, char *argv[], char *env[])
 			break;
 		}
 		if (cmd_Count != 0)
-			write(STDOUT_FILENO, command, cmd_Count);
+		{
+			Cmd = parser1(command, "argv");
+			for (x = 0; Cmd[x]; x++)
+				printf("command str is: %s\n", Cmd[x]);
+			for (x = 0; Cmd[x]; x++)
+				free(Cmd[x]);
+			free(Cmd);
+		}
 		if (!mode)
 		{
 			free(command);
@@ -46,7 +55,7 @@ int main(int argc, char *argv[], char *env[])
 		free(command);
 	}
 	return (0);
-}
+	}
 /**
  * print_Prompt1 - prints prompt
  * Return: void
@@ -70,19 +79,24 @@ void print_Prompt1(void)
 char *read_Cmd(char *argv)
 {
 	size_t bufsize = 1024;
-	ssize_t cmd_Check;
+	ssize_t cmd_Check = NULL;
 	char *cmd_Str = NULL, *buf = NULL;
-	char *err_Str, *temp, *err_Str2, *temp2, *cmd_temp;
+	/*char *err_Str = NULL, *temp = NULL, *err_Str2 = NULL;*/
+	char /**temp2 = NULL, */*cmd_temp = NULL;
 	int ptr_len = 0, cmd_index = 0, buf_len = 0;
-	char *num_Buf;
+/*	char *num_Buf = NULL;
 
 	num_Buf = malloc(10);
 	if (!num_Buf)
 		return (NULL);
-	err_Str = _strcat(argv, ": ");
+	for (x = 0; num_Buf[x]; x++)
+		num_Buf[x] = '\0';
+	err_Str = strcat(argv, ": ");
 	temp2 = str_number(num_Buf, (unsigned int)err_Cnt);
-	err_Str2 = _strcat(temp2, ": ");
-	temp = _strcat(err_Str, err_Str2);
+	err_Str2 = strcat(temp2, ": ");
+	temp = strcat(err_Str, err_Str2);
+*/
+	(void)argv;
 	while(cmd_Check != -1)
 	{
 		cmd_Check = getline(&buf, &bufsize, stdin);
@@ -102,7 +116,7 @@ char *read_Cmd(char *argv)
 		{
 			if (buf_len == 1 || buf[buf_len - 2] != '\\')
 			{
-				free(buf), free(num_Buf);
+				free(buf);
 				return (cmd_Str);
 			}
 			cmd_Str[ptr_len + buf_len - 2] = '\0';
@@ -113,11 +127,10 @@ char *read_Cmd(char *argv)
 	}
 	if (!cmd_Str)
 	{
-		write(STDERR_FILENO, temp, _strlen(temp));
 		write(STDERR_FILENO, "Memory error", 12);
 		exit(11);
 	}
-	free(buf), free(num_Buf);
+	free(buf);
 	return (cmd_Str);
 }
 /**
