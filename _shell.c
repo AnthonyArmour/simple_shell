@@ -41,8 +41,10 @@ int main(int argc, char *argv[], char *env[])
 		if (cmd_Count != 0)
 		{
 			Cmd = parser1(command, "argv");
-			for (x = 0; Cmd[x]; x++)
-				printf("command str is: %s\n", Cmd[x]);
+			parser2(Cmd, "argv");
+			/*for (x = 0; Cmd[x]; x++)
+				printf("command str is: %s\n", Cmd[x]);*/
+			
 			for (x = 0; Cmd[x]; x++)
 				free(Cmd[x]);
 			free(Cmd);
@@ -81,21 +83,9 @@ char *read_Cmd(char *argv)
 	size_t bufsize = 1024;
 	ssize_t cmd_Check = NULL;
 	char *cmd_Str = NULL, *buf = NULL;
-	/*char *err_Str = NULL, *temp = NULL, *err_Str2 = NULL;*/
-	char /**temp2 = NULL, */*cmd_temp = NULL;
+	char *cmd_temp = NULL;
 	int ptr_len = 0, cmd_index = 0, buf_len = 0;
-/*	char *num_Buf = NULL;
 
-	num_Buf = malloc(10);
-	if (!num_Buf)
-		return (NULL);
-	for (x = 0; num_Buf[x]; x++)
-		num_Buf[x] = '\0';
-	err_Str = strcat(argv, ": ");
-	temp2 = str_number(num_Buf, (unsigned int)err_Cnt);
-	err_Str2 = strcat(temp2, ": ");
-	temp = strcat(err_Str, err_Str2);
-*/
 	(void)argv;
 	while(cmd_Check != -1)
 	{
@@ -117,6 +107,7 @@ char *read_Cmd(char *argv)
 			if (buf_len == 1 || buf[buf_len - 2] != '\\')
 			{
 				free(buf);
+				cmd_Str[_strlen(cmd_Str) - 1] = '\0';
 				return (cmd_Str);
 			}
 			cmd_Str[ptr_len + buf_len - 2] = '\0';

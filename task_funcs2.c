@@ -17,7 +17,7 @@
 	}
 	count++;
 	return (count);
-	}*/
+}*/
 /**
  * add_node - adds node
  * @head: ptr
@@ -43,7 +43,7 @@
 	temp->next = *head;
 	*head = temp;
 	return (*head);
-	}*/
+}*/
 /**
  * append_text_to_file - appends text to file
  * @filename: name
@@ -97,7 +97,7 @@ int append_text_to_file(const char *filename, char *text_content)
 		temp = temp->next;
 	}
 	return (temp);
-	}*/
+}*/
 /**
  * insert_nodeint_at_index - inserts node into linked list
  * @head: head of list
@@ -141,4 +141,21 @@ int append_text_to_file(const char *filename, char *text_content)
 	temp->next = trav->next;
 	trav->next = temp;
 	return (temp);
-	}*/
+}*/
+/**
+ * free_list - frees lists
+ * @head: head of list
+ * Return: void
+ */
+/*void free_list(list_t *head)
+{
+	list_t *temp;
+
+	while (head != NULL)
+	{
+		temp = head;
+		head = head->next;
+		free(temp->str);
+		free(temp);
+	}
+}*/
