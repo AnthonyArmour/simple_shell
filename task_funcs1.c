@@ -1,4 +1,5 @@
 #include "shell.h"
+
 /**
  * _strdup - pointer to newly alloced mem
  * @str: string input
@@ -6,6 +7,7 @@
  *
  *
  */
+
 char *_strdup(char *str)
 {
 	int x = 0;
@@ -46,11 +48,13 @@ int _strlen(char *s)
 	}
 	return (i);
 }
+
 /**
  * free_list - frees lists
  * @head: head of list
  * Return: void
  */
+
 /*void free_list(list_t *head)
 {
 	list_t *temp;
@@ -62,13 +66,15 @@ int _strlen(char *s)
 		free(temp->str);
 		free(temp);
 	}
-	}*/
+}*/
+
 /**
  * *_strcpy - copies string
  * @dest: pointer input
  * @src: pointer input
  * Return: char
  */
+
 char *_strcpy(char *dest, char *src)
 {
 	int x = 0;
@@ -80,6 +86,7 @@ char *_strcpy(char *dest, char *src)
 	*(dest + x) = *(src + x);
 	return (dest);
 }
+
 /**
  * _putchar - writes the character c to stdout
  * @c: The character to print
@@ -87,6 +94,7 @@ char *_strcpy(char *dest, char *src)
  * Return: On success 1.
  * On error, -1 is returned, and errno is set appropriately.
  */
+
 int _putchar(char c)
 {
 	return (write(1, &c, 1));

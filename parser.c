@@ -1,47 +1,4 @@
 #include "shell.h"
-#include <string.h>
-
-/*int main(void)
-{
-	char *cmd = NULL;
-	char **temp;
-	int x = 0;
-
-	printf("Prompt: ");
-	cmd = read_Cmd("argv");
-	temp = parser1(cmd, "argv");
-	for (x = 0; temp[x]; x++)
-		printf("command is: %s\n", temp[x]);
-	return (0);
-}
-*/
-/**
- * cmdStrDimensions - Calculates dimensions of passed arguments/commands
- * @cmd_Str: Commands/arguments passed
- * @argv: Name of our shell executable
- * @cmd_Str_Len: Length of commands/arguments passed
- * @cmd_Count: Amount of commands/arguments passed
- * Return: Void
- */
-
-void cmdStrDimensions(char *cmd_Str, char *argv, int *cmd_Str_Len, int *cmd_Count)
-{
-	int cmd_Pos = 0;
-
-	(void)argv;
-	if (cmd_Str == NULL)
-		return;
-	for (cmd_Pos = 0; cmd_Str[cmd_Pos]; cmd_Pos++)
-	{
-		if (cmd_Str[cmd_Pos] == ';')
-		{
-			(*cmd_Count)++;
-			continue;
-		}
-	(*cmd_Str_Len)++;
-	}
-	return;
-}
 
 /**
  * _strtok - Returns next word of input string
@@ -51,19 +8,22 @@ void cmdStrDimensions(char *cmd_Str, char *argv, int *cmd_Str_Len, int *cmd_Coun
  * Return: Next word of input string
  */
 
-char *_strtok(char *str, int index, char delim)
+char *_strtok(char *str, int *index, char delim)
 {
 	int x = 0, y = 0;
 	char *tok;
 
-	while (str[y + index] != '\0' && str[y + index] != delim)
+	while (str[(*index)] == ' ')
+		(*index)++;
+	while (str[y + (*index)] != '\0' && str[y + (*index)] != delim)
 		y++;
 	tok = malloc(sizeof(char) * (y + 1));
 	if (!tok)
 		return (NULL);
 	for (x = 0; x < y; x++)
-		tok[x] = str[x + index];
+		tok[x] = str[x + (*index)];
 	tok[x] = '\0';
+	*index += x;
 	return (tok);
 }
 
@@ -85,7 +45,7 @@ char **parser1(char *cmd_Str, char *argv)
 		else
 		{
 			y = 0;
-			tmp = _strtok(cmd_Str, cmd_Pos, ';');
+			tmp = _strtok(cmd_Str, &cmd_Pos, ';');
 			if (!tmp)
 				return (NULL);
 			while (tmp[y])
@@ -96,9 +56,55 @@ char **parser1(char *cmd_Str, char *argv)
 			cmd_List[x][xx] = '\0';
 			if (tmp)
 				free(tmp);
-			x++, cmd_Pos += y;
+			x++;
 		}
 	}
 	cmd_List[x] = NULL;
 	return (cmd_List);
+}
+
+void parser2(char **cmd_List, char *argv)
+{
+	int x = 0, i = 0, tok_idx = 0, chars = 0, words = 0;
+	char **tokes = NULL;
+
+	(void)argv;
+	for (; cmd_List[x]; x++)
+	{
+		dim2(cmd_List[x], &chars, &words);
+		tokes = malloc(sizeof(char *) * chars + words);
+		tokes[0] = _strtok(cmd_List[x], &tok_idx, ' ');
+		for (i = 1; i < words; i++)
+		{
+			tokes[i] = _strtok(cmd_List[x], &tok_idx, ' ');
+		}
+		tokes[i] = NULL;
+		exec_Cmd(tokes);
+		/*for (i = 0; tokes[i]; i++)
+			printf("%s\n", tokes[i]);*/
+		for (i = 0; tokes[i]; i++)
+			free(tokes[i]);
+		free(tokes);
+		chars = 0, words = 0, tok_idx = 0;
+	}
+}
+
+void exec_Cmd(char **tokes)
+{
+	pid_t pid = fork();
+
+	if (pid != 0)
+	{
+		while (wait(NULL) != -1)
+			;
+	}
+	else
+	{
+		if (execve(tokes[0], tokes, NULL) == -1)
+		{
+			perror("exec failure");
+			exit(-1);
+		}
+	}
+	return;
 }

@@ -1,0 +1,9 @@
+/*	char *num_Buf = NULL;
+
+	num_Buf = malloc(10);
+	if (!num_Buf)
+		return (NULL);
+	for (x = 0; num_Buf[x]; x++)
+		num_Buf[x] = '\0';
+	err_Str = strcat(argv, ": ");
+	temp2 = str_number(num_Buf, (unsigned int)err_Cnt);		*/
