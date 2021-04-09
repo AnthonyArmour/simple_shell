@@ -11,7 +11,7 @@
 	buf[num_index] = (n % 10 + '0'), num_index++;
 	return (temp);
 }*/
-
+/*
 int num_index = 0;
 char *str_number(char *buf, unsigned int n)
 {
@@ -43,7 +43,7 @@ char *str_number(char *buf, unsigned int n)
 	}
 	buf[num_index] = '\0';
 	return (buf);
-}
+	}*/
 
 /**
  * _strcat - concatinate string
@@ -57,6 +57,8 @@ char *_strcat(char *dest, char *src)
 	int dest_len = 0;
 	int x = 0;
 
+	if (!dest)
+		return (NULL);
 	while (dest[dest_len] != '\0')
 	{
 		dest_len++;
