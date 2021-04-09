@@ -15,7 +15,6 @@ int main(int argc, char *argv[], char *env[])
 
 	(void)argv;
 	(void)argc;
-	(void)env;
 	if ((mode = isatty(STDIN_FILENO)))
                 puts("Interactive mode!");
         else
@@ -40,21 +39,15 @@ int main(int argc, char *argv[], char *env[])
 		}
 		if (cmd_Count != 0)
 		{
-			Cmd = parser1(command, "argv");
-			parser2(Cmd, "argv");
-			/*for (x = 0; Cmd[x]; x++)
-				printf("command str is: %s\n", Cmd[x]);*/
-			
+			Cmd = parser1(command, argv[0]);
+			parser2(Cmd, argv[0], env);
 			for (x = 0; Cmd[x]; x++)
 				free(Cmd[x]);
 			free(Cmd);
 		}
-		if (!mode)
-		{
-			free(command);
-			break;
-		}
 		free(command);
+		if (!mode)
+			break;
 	}
 	return (0);
 	}
@@ -84,12 +77,28 @@ char *read_Cmd(char *argv)
 	ssize_t cmd_Check = NULL;
 	char *cmd_Str = NULL, *buf = NULL;
 	char *cmd_temp = NULL;
-	int ptr_len = 0, cmd_index = 0, buf_len = 0;
+	int ptr_len = 0, cmd_index = 0, buf_len = 0, x = 0, y;
 
 	(void)argv;
 	while(cmd_Check != -1)
 	{
 		cmd_Check = getline(&buf, &bufsize, stdin);
+		for (x = 0; buf[x] != '\0'; x++)
+		{
+			if (buf[x + 1] == '#')
+			{
+				buf[x] = '\n';
+				buf[x + 1] = '\0';
+				y = x;
+				while (buf[y - 1] == ' '|| buf[y - 1] == '\\')
+				{
+					y--;
+					if (buf[y] == '\\')
+						buf[y] = ' ';
+				}
+				break;
+			}
+		}
 		buf_len = _strlen(buf);
 		if (!cmd_Str)
 			cmd_Str = malloc(buf_len + 1);

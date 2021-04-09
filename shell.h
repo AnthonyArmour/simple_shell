@@ -10,23 +10,36 @@
 #include <unistd.h>
 #include <string.h>
 #include <errno.h>
-/* global variables */
+/* STRUCTS */
+typedef struct built_in
+{
+	char *var;
+	int (*f)(char **tokes, char *argv, char **env);
+} b_in;
 /* Prototypes */
 int _putchar(char c);
 char *_strcpy(char *dest, char *src);
 int _strlen(char *s);
 char *_strdup(char *str);
-void dim2(char *str, int *chars, int *words);
-void parser2(char **cmd_List, char *argv);
+void dim2(char *str, int *chars, int *words, char *argv);
+void parser2(char **cmd_List, char *argv, char **env);
 char **parser1(char *cmd_Str, char *argv);
 void cmdStrDimensions(char *cmd_Str, char *argv, int *cmd_Str_Len, int *cmd_Count);
 char *read_Cmd(char *argv);
-void exec_Cmd(char **tokes);
+void exec_Cmd(char **tokes, char *argv, char **env);
 char *_realloc(char *ptr, unsigned int old_size, unsigned int new_size);
 char *_strcat(char *dest, char *src);
 void print_Prompt1(void);
 char *str_number(char *buf, unsigned int n);
 void print_Prompt2(void);
+int builtin(char **tokes, char *argv, char **env);
+int b_env(char **tokes, char *argv, char **env);
+char *get_path(char **env, char *token);
+int path_check(char **paths);
+char **append_paths(char *token, char **paths);
+char *str_mul_cat(char *dest, char *str2, char *str1);
+int path_idx(char **env);
+size_t get_size(char *str, char delim);
 /*size_t list_len(const list_t *h);
 void free_list(list_t *head);
 list_t *add_node(list_t **head, const char *str);
