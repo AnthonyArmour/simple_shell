@@ -1,9 +1,11 @@
 #include "shell.h"
+
 /**
  * list_len - finds num of elements in list
  * @h: ptr
  * Return: size_t
  */
+
 /*size_t list_len(const list_t *h)
 {
 	size_t count = 0;
@@ -18,38 +20,41 @@
 	count++;
 	return (count);
 }*/
+
 /**
  * add_node - adds node
  * @head: ptr
  * @str: ptr
  * Return: list_t ptr
  */
-/*list_t *add_node(list_t **head, const char *str)
+
+ll *add_Alias_Node(ll **alias_List, char *str)
 {
-	list_t *temp;
+	ll *temp;
 
 	if (str == NULL)
 		return (NULL);
-	temp = malloc(sizeof(list_t));
+	temp = malloc(sizeof(ll));
 	if (temp == NULL)
 		return (NULL);
-	temp->str = strdup((char *)str);
+	temp->str = _strdup(str);
 	if (temp->str == NULL)
 	{
 		free(temp);
 		return (NULL);
 	}
-	temp->len = (unsigned int)_strlen(temp->str);
-	temp->next = *head;
-	*head = temp;
-	return (*head);
-}*/
+	temp->next = *alias_List;
+	*alias_List = temp;
+	return (*alias_List);
+}
+
 /**
  * append_text_to_file - appends text to file
  * @filename: name
  * @text_content: str
  * Return: 1 or -1
  */
+
 int append_text_to_file(const char *filename, char *text_content)
 {
 	int fp;
@@ -74,12 +79,14 @@ int append_text_to_file(const char *filename, char *text_content)
 	close(fp);
 	return (1);
 }
+
 /**
  * get_nodeint_at_index - return nth node
  * @head: head
  * @index: index of node
  * Return: ptr to node
  */
+
 /*listint_t *get_nodeint_at_index(listint_t *head, unsigned int index)
 {
 	listint_t *temp;
@@ -98,6 +105,7 @@ int append_text_to_file(const char *filename, char *text_content)
 	}
 	return (temp);
 }*/
+
 /**
  * insert_nodeint_at_index - inserts node into linked list
  * @head: head of list
@@ -105,6 +113,7 @@ int append_text_to_file(const char *filename, char *text_content)
  * @n: data to be stored in new node
  * Return: address of new node
  */
+
 /*listint_t *insert_nodeint_at_index(listint_t **head, unsigned int idx, int n)
 {
 	listint_t *temp;
@@ -142,11 +151,13 @@ int append_text_to_file(const char *filename, char *text_content)
 	trav->next = temp;
 	return (temp);
 }*/
+
 /**
  * free_list - frees lists
  * @head: head of list
  * Return: void
  */
+
 /*void free_list(list_t *head)
 {
 	list_t *temp;

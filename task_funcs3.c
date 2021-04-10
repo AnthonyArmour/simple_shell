@@ -11,6 +11,7 @@
 	buf[num_index] = (n % 10 + '0'), num_index++;
 	return (temp);
 }*/
+
 /*
 int num_index = 0;
 char *str_number(char *buf, unsigned int n)
@@ -43,7 +44,7 @@ char *str_number(char *buf, unsigned int n)
 	}
 	buf[num_index] = '\0';
 	return (buf);
-	}*/
+}*/
 
 /**
  * _strcat - concatinate string
@@ -106,4 +107,19 @@ char *_realloc(char *ptr, unsigned int old_size, unsigned int new_size)
 	nptr[x] = '\0';
 	free(ptr);
 	return (nptr);
+}
+
+void print_list(ll *h)
+{
+	while (h->next != NULL)
+	{
+		if (h->str == NULL)
+		{
+			printf("[0] (nil)\n");
+		}
+		else
+			printf("%s\n", h->str);
+		h = h->next;
+	}
+	printf("%s\n", h->str);
 }
