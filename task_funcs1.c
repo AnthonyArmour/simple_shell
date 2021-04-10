@@ -4,8 +4,6 @@
  * _strdup - pointer to newly alloced mem
  * @str: string input
  * Return: string
- *
- *
  */
 
 char *_strdup(char *str)

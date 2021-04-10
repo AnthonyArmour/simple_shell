@@ -54,3 +54,27 @@ void dim2(char *str, int *chars, int *words, char *argv)
 		(*chars)++;
 	}
 }
+
+
+void dim3(char *str, int *chars, int *words, char *argv)
+{
+	int x = 0;
+
+	if (!str)
+	{
+		perror(argv);
+		exit(EXIT_FAILURE);
+	}
+	for (; str[x]; x++)
+	{
+		if (str[x] == 39)
+		{
+			x++;
+			while (str[x] != 39)
+				x++;
+		}
+		if ((str[x] != ' ' && str[x + 1] == ' ') || (str[x + 1] == '\0'))
+			(*words)++;
+		(*chars)++;
+	}
+}

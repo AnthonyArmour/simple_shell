@@ -10,17 +10,27 @@ int err_Cnt = 0;
 int main(int argc, char *argv[], char *env[])
 {
 	char *command = NULL;
-	int ttrue = 1, cmd_Count = 0, mode, x = 0;
+	int ttrue = 1, cmd_Count = 0, mode, x = 0, fd;
 	char **Cmd = NULL;
+	ll *alias_List = NULL;
 
 	(void)argv;
 	(void)argc;
+	if (argv[1] != NULL)
+	{
+		fd = open(argv[1], O_RDONLY);
+		if (fd == -1)
+			exit(22);
+		alias_List = _script(fd, argv[0], env, alias_List);
+		return (0);
+	}
 	if ((mode = isatty(STDIN_FILENO)))
                 puts("Interactive mode!");
         else
 	{
                 puts("Non-interactive mode!");
 	}
+	signal(SIGINT, SIG_IGN);
 	while (ttrue)
 	{
 		if (mode)
@@ -40,7 +50,7 @@ int main(int argc, char *argv[], char *env[])
 		if (cmd_Count != 0)
 		{
 			Cmd = parser1(command, argv[0]);
-			parser2(Cmd, argv[0], env);
+			alias_List = parser2(Cmd, argv[0], env, alias_List);
 			for (x = 0; Cmd[x]; x++)
 				free(Cmd[x]);
 			free(Cmd);
@@ -50,27 +60,57 @@ int main(int argc, char *argv[], char *env[])
 			break;
 	}
 	return (0);
-	}
+}
+	
 /**
- * print_Prompt1 - prints prompt
+ * _script - runs command script
+ * @fd: File descriptor for script
+ * @argv: Arguments
+ * @env: Environment
  * Return: void
  */
-void print_Prompt1(void)
-{
-	char *buf = "SS$ ";
-	int Wcheck;
-	char *err = "ERROR: Could not write prompt";
 
-	Wcheck = write(STDOUT_FILENO, buf, _strlen(buf));
-	if (Wcheck == -1)
+ll *_script(int fd, char *argv, char **env, ll *alias_List)
+{
+	int x = 0, xx = 0, buflen = 0, newlen = 0;
+	char *buf = NULL, tmp[1024];
+	char **Cmd = NULL;
+	ssize_t count;
+
+	while ((count = read(fd, tmp, 1024)) > 0)
 	{
-		Wcheck = write(STDERR_FILENO, err, _strlen(err)), exit(10);
+		if (buf != NULL)
+			buflen = _strlen(buf);
+		newlen = buflen + count;
+		buf = _realloc(buf, buflen, newlen);
+		for (x = 0; x < count; x++)
+		{
+			buf[xx] = tmp[x];
+			xx++;
+		}
+		buf[xx] = '\0';
 	}
+	for (x = 0; buf[x]; x++)
+	{
+		if (buf[x] == '\n')
+			buf[x] = ';';
+	}
+	if (x != 0)
+	{
+		Cmd = parser1(buf, argv);
+		alias_List = parser2(Cmd, argv, env, alias_List);
+		for (x = 0; Cmd[x]; x++)
+			free(Cmd[x]);
+		free(Cmd);
+	}
+	return (alias_List);
 }
+
 /**
  * read_Cmd - reads command into string
  * Return: string
  */
+
 char *read_Cmd(char *argv)
 {
 	size_t bufsize = 1024;
@@ -132,20 +172,4 @@ char *read_Cmd(char *argv)
 	}
 	free(buf);
 	return (cmd_Str);
-}
-/**
- * print_Prompt2 - prints > prompt
- * Return: void
- */
-void print_Prompt2(void)
-{
-        char *buf = "> ";
-        int Wcheck;
-        char *err = "ERROR: Could not write prompt";
-
-        Wcheck = write(STDOUT_FILENO, buf, _strlen(buf));
-        if (Wcheck == -1)
-	{
-                Wcheck = write(STDERR_FILENO, err, _strlen(err)), exit(10);
-	}
 }
