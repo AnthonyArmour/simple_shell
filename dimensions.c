@@ -1,7 +1,7 @@
 #include "shell.h"
 
 /**
- * cmdStrDimensions - Calculates dimensions of passed arguments/commands
+ * StrDimensions - Calculates dimensions of passed arguments/commands
  * @cmd_Str: Commands/arguments passed
  * @argv: Name of our shell executable
  * @cmd_Str_Len: Length of commands/arguments passed
@@ -9,7 +9,7 @@
  * Return: Void
  */
 
-void cmdStrDimensions(char *cmd_Str, char *argv, int *cmd_Str_Len, int *cmd_Count)
+void StrDimensions(char *cmd_Str, char *argv, int *cmd_Str_Len, int *cmd_Count)
 {
 	int cmd_Pos = 0;
 
@@ -27,7 +27,6 @@ void cmdStrDimensions(char *cmd_Str, char *argv, int *cmd_Str_Len, int *cmd_Coun
 		}
 	(*cmd_Str_Len)++;
 	}
-	return;
 }
 
 /**
@@ -35,6 +34,7 @@ void cmdStrDimensions(char *cmd_Str, char *argv, int *cmd_Str_Len, int *cmd_Coun
  * @str: input string
  * @chars: num of chars in str
  * @words: num of words in string
+ * @argv: argv[0]
  * Return: void
  */
 
@@ -55,6 +55,14 @@ void dim2(char *str, int *chars, int *words, char *argv)
 	}
 }
 
+/**
+ * dim3 - gets amount of chars and words based on delim
+ * @str: str to count
+ * @chars: num of letter
+ * @words: num of words based on delim
+ * @argv: argv[0]
+ * Return: void
+ */
 
 void dim3(char *str, int *chars, int *words, char *argv)
 {

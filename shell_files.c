@@ -1,6 +1,6 @@
 #include "shell.h"
 
-/*
+/**
  * path_check - finds directory paths
  * @paths: directory paths
  * Return: directory path index
@@ -16,6 +16,8 @@ int path_check(char **paths)
 		if (stat(paths[x], &stats) == 0)
 			break;
 	}
+	if (!paths[x])
+		x = -1;
 	return (x);
 }
 
