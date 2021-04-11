@@ -23,6 +23,7 @@ typedef struct linked_list
 	struct linked_list *next;
 } ll;
 /* Prototypes */
+char *_strtok(char *str, int *index, char delim);
 int _putchar(char c);
 char *_strcpy(char *dest, char *src);
 int _strlen(char *s);
@@ -30,7 +31,7 @@ char *_strdup(char *str);
 void dim2(char *str, int *chars, int *words, char *argv);
 ll *parser2(char **cmd_List, char *argv, char **env, ll *alias_List);
 char **parser1(char *cmd_Str, char *argv);
-void cmdStrDimensions(char *cmd_Str, char *argv, int *cmd_Str_Len, int *cmd_Count);
+void StrDimensions(char *cmd_Str, char *argv, int *cmd_Str_Len, int *cmd_Count);
 char *read_Cmd(char *argv);
 void exec_Cmd(char **tokes, char *argv, char **env);
 char *_realloc(char *ptr, unsigned int old_size, unsigned int new_size);
@@ -61,6 +62,8 @@ char *_strtok_Alias(char *str, int *index, char delim);
 char *alias_Check(char *cmd_Str, ll *alias_List, char *argv);
 char *reset_Cmd(char *alias_Cmd, char *argv, char *cmd_Str, int idx, int len);
 char *rep_Alias(ll *alias_List, char *argv, char **tokes, int *idx, int *len);
+char *print_number(int n);
+void handle_err(char *argv, int err_num, char *token);
 /*size_t list_len(const list_t *h);
 void free_list(list_t *head);
 list_t *add_node(list_t **head, const char *str);
