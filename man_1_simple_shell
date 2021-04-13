@@ -1,0 +1,83 @@
+.\" Manpage for simple shell
+.\" Created by Adam Taylor and Anthony Armour
+.TH simple_shell AR "12 04 2021" "1.0" "simple_shell man page"
+.SH NAME
+hsh \- A replica of the shell in a Linux based operating system's terminal
+.SH SYNOPSIS
+.P
+#include "shell.h"
+.P
+gcc *.c
+.P
+[COMMAND] [ARGUMENTS]
+.SH DESCRIPTION
+Simple_Shell is an sh-compatible command language interpreter that executes commands and arguments read from the standard input.
+.P
+Simple_Shell can be configured to be the POSIX-conformant by default.
+.SH OPTIONS
+.P
+A command followed by an optional set of arguments to be interpreted through standard input and displayed on standard output.
+.TP
+.BR 
+PATH - When inputting PATH, the simple_shell will display which directories it is using to search for executable files in response to commands issued by the user.
+.TP
+.BR
+exit - The exit command is used to exit the shell where it is currently running. It takes one more parameter as [N] and exits the shell with a return of status N. If N is not provided, then it simply returns the status of the last command that was executed. After pressing enter, the terminal will simply close.
+.TP
+.BR
+env - env is a command used to either print a list of environmental variables or run another utility in an altered environment without having to modify the currently existing environment. Using env, variables may be added or removed, and existing variables may be changed by assigning new values to them.
+.TP
+.BR
+exit status - This command has the same functionality as exit does, but status is an integer used to exit the shell.
+.TP
+.BR
+Ctrl+C - This command interrupts (or kills) the current foreground process running in the terminal. This sends the SIGINT signal to the process, which is technically just a request-most processes will honor it, but some may ignore it.
+.TP
+.BR
+setenv - setenv adds or changes the value of an environmental variable.
+.TP
+.BR
+unsetenv - unsetenv is a function that removes an environmental variable from the environment of the calling process. The name argument points to a string, which is the name of the variable to be removed. The named argument shall not contain a '=' character.
+.TP
+.BR
+cd - cd (cd <directory_name>) is a command that is used to change the current working directory. The current working directory is the directory (folder) in which the user is currently working in. Each time you interact with your command prompt, you are working within a directory. When no directory name is supplied after calling the command, you will be brought to your home directory. To change back to your previous working directory, you may use "cd -". It is also worth mentioning that when you cd into a different directory, your environmental variable PWD will be changed.
+.TP
+.BR
+; - ; is a command separator. You can run more than one command on a single line by using the command separator, placing the semicolon between each command. It does not matter if you have a space before the semicolon or not.
+.TP
+.BR
+alias - An alias is a name that the shell translates into another name or command. Aliases allow you to define new commands by substituting a string for the first token of a simple command. 
+.TP
+.BR
+# - When using a # anywhere in your input, the simple_shell will ignore anything passed to it after the #, acting as a command in your input string.
+.SH
+EXAMPLES
+.P
+To achieve setting an alias, you will use the following format. Here, we will be setting NEWCAR to 'ls'. Now, whenever we feed standard in NEWCAR, the ls command will be invoked.
+.P
+			alias NEWCAR='ls'
+.P
+			NEWCAR
+.P
+Here we will be using the ls command again, but this time it is followed by two different arguments. -l displays your output in long format, and -a will display all of the hidden files in your current working directory.
+.P
+			ls -la
+.P
+Our Simple Shell also is capable of taking a filename as an argument. In the following example, we will be using the cat command and "piping" that command to the file filename123. Our output will be whatever is inside of the file we put as our argument.
+.P
+			cat filename123
+.P
+To show off how command separators work, we will be running three different commands all at once. ls, cat file123, and echo "Holberton School" are separted by semicolons, telling our Simple Shell that we will be feeding it three different commands in one input line.
+.P
+			ls ; cat file123 ; echo "Holberton School"
+.P
+The cd command was a lot of fun to get working. Here, we are using cd to change to the directory AntAdam, but preceeding the directory name, we have put in a #, which will comment out everything after it, therefore cding us into our home directory, since our Simple Shell read no directory name to change to.
+.P
+			cd #AntAdam
+.SH
+AUTHORS
+Written by Adam Taylor and Anthony Armour.
+.SH
+COLOPHON
+.P
+This page is part of a group project issued by Holberton School - School of Computer Science and Software Engineering.

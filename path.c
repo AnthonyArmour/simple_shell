@@ -37,6 +37,7 @@ char *get_path(char **env, char *token)
 }
 
 
+
 char *add_cwd(char *str)
 {
 	int x = 0, xx = 0, idx = 0, sig = 0;
@@ -101,4 +102,64 @@ char *add_cwd(char *str)
 /*	free(str);
  */	free(buf);
 	return (temp);
+}
+
+/**
+ * path_check - finds directory paths
+ * @paths: directory paths
+ * Return: directory path index
+ */
+
+int path_check(char **paths)
+{
+	int x = -1;
+	struct stat stats;
+
+	for (x = 0; paths[x]; x++)
+	{
+		if (stat(paths[x], &stats) == 0)
+			break;
+	}
+	if (!paths[x])
+		x = -1;
+	return (x);
+}
+
+/**
+ * append_paths - appends command to the path
+ * @token: command
+ * @paths: paths!
+ * Return: appended paths
+ */
+
+char **append_paths(char *token, char **paths)
+{
+	int x = 0;
+
+	for (x = 0; paths[x]; x++)
+	{
+		paths[x] = _realloc(paths[x], _strlen(paths[x]),
+				    _strlen(paths[x]) + _strlen(token) + 2);
+		paths[x] = str_mul_cat(paths[x], token, "/");
+	}
+	return (paths);
+}
+
+/**
+ * path_idx - finds path variable in environment
+ * @env: environment
+ * Return: path variable index
+ */
+
+int path_idx(char **env)
+{
+	int x = 0;
+
+	while (env[x])
+	{
+		if (strncmp(env[x], "PATH=", 5) == 0)
+			break;
+		x++;
+	}
+	return (x);
 }
