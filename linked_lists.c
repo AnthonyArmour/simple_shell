@@ -56,13 +56,8 @@ void print_list(ll *h)
 {
 	while (h->next != NULL)
 	{
-		if (h->str == NULL)
-		{
-			printf("[0] (nil)\n");
-		}
-		else
-			printf("%s\n", h->str);
+		write(STDOUT_FILENO, h->str, _strlen(h->str));
 		h = h->next;
 	}
-	printf("%s\n", h->str);
+	write(STDOUT_FILENO, h->str, _strlen(h->str));
 }

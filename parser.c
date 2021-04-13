@@ -17,7 +17,11 @@ char *_strtok(char *str, int *index, char delim)
 	if (!str)
 		return (NULL);
 	while (str[(*index)] == ' ')
+	{
+		if (str[(*index)] == ' ' && str[(*index) + 1] == '\0')
+			return (NULL);
 		(*index)++;
+	}
 	while (str[y + (*index)] != '\0' && str[y + (*index)] != delim)
 		y++;
 	tok = malloc(sizeof(char) * (y + 1));
@@ -74,6 +78,7 @@ char **parser1(char *cmd_Str, char *argv)
 		}
 	}
 	cmd_List[x] = NULL;
+	free(cmd_Str);
 	return (cmd_List);
 }
 
@@ -92,7 +97,6 @@ ll *parser2(char **cmd_List, char *argv, char **env, ll *alias_List)
 	int built_In = 0;
 	char **tokes = NULL;
 	char *our_path = NULL;
-	struct stat stats;
 
 	for (; cmd_List[x]; x++)
 	{
@@ -114,14 +118,11 @@ ll *parser2(char **cmd_List, char *argv, char **env, ll *alias_List)
 		built_In = builtin(tokes, argv, env);
 		if (built_In == 0)
 		{
-			if (stat(tokes[0], &stats) != 0)
+			our_path = get_path(env, tokes[0]);
+			if (our_path)
 			{
-				our_path = get_path(env, tokes[0]);
-				if (our_path)
-				{
-					free(tokes[0]);
-					tokes[0] = our_path;
-				}
+				free(tokes[0]);
+				tokes[0] = our_path;
 			}
 			exec_Cmd(tokes, argv, env);
 		}
@@ -130,7 +131,10 @@ ll *parser2(char **cmd_List, char *argv, char **env, ll *alias_List)
 		free(tokes);
 		chars = 0, words = 0, tok_idx = 0;
 	}
-	return (alias_List);
+/*	for (x = 0; cmd_List[x]; x++)
+		free(cmd_List[x]);
+	free(cmd_List);
+*/	return (alias_List);
 }
 
 /**
@@ -185,7 +189,7 @@ void handle_err(char *argv, int err_num, char *token)
 	temp[idx] = num[x], idx++;
 	temp[idx] = ':', idx++;
 	temp[idx] = ' ', idx++;
-	if (err_num == 2)
+	if (err_num == 2 || err_num == 20)
 	{
 		temp = _realloc(temp, _strlen(temp),
 				_strlen(temp) + _strlen(token) + 2);

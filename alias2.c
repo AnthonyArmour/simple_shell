@@ -11,7 +11,7 @@
 char *alias_Check(char *cmd_Str, ll *alias_List, char *argv)
 {
 	int i = 0, tok_idx = 0, chars = 0, words = 0, idx = 0, len = 0;
-	char **tokes = NULL, *alias_Cmd = NULL, *new_Cmd;
+	char **tokes = NULL, *alias_Cmd = NULL, *new_Cmd = NULL;
 
 	dim2(cmd_Str, &chars, &words, argv);
 	tokes = malloc(sizeof(char *) * chars + words);
@@ -43,7 +43,7 @@ char *alias_Check(char *cmd_Str, ll *alias_List, char *argv)
 char *reset_Cmd(char *alias_Cmd, char *argv, char *cmd_Str, int idx, int len)
 {
 	int x = 0, xx = 0, y = 0, m = 0, words = 0, signal = 0;
-	char *new_Cmd;
+	char *new_Cmd = NULL;
 
 	(void)argv;
 	if (_strlen(alias_Cmd) > len)
@@ -95,7 +95,8 @@ char *reset_Cmd(char *alias_Cmd, char *argv, char *cmd_Str, int idx, int len)
 char *rep_Alias(ll *alias_List, char *argv, char **tokes, int *idx, int *len)
 {
 	char *cmd_Str = NULL;
-
+/*	int x = 0;
+ */
 	(void)argv;
 	for ((*idx) = 0; tokes[(*idx)]; (*idx)++)
 	{
@@ -124,5 +125,8 @@ char *rep_Alias(ll *alias_List, char *argv, char **tokes, int *idx, int *len)
 		cmd_Str += ((*len) + 2);
 		cmd_Str[_strlen(cmd_Str) - 1] = '\0';
 	}
-	return (cmd_Str);
+/*	for (x = 0; tokes[x]; x++)
+		free(tokes[x]);
+	free(tokes);
+*/	return (cmd_Str);
 }

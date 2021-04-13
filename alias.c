@@ -95,6 +95,9 @@ ll *alias_Options(char *argv, char *cmd, ll *alias_List)
 		if (signal == 0)
 			print_Alias(tokes[x], argv, alias_List);
 	}
+	for (x = 0; tokes[x]; x++)
+		free(tokes[x]);
+	free(tokes);
 	(void)signal;
 	return (alias_List);
 }

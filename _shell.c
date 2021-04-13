@@ -22,32 +22,34 @@ int main(int argc, char *argv[], char *env[])
 		if (fd == -1)
 			exit(22);
 		alias_List = _script(fd, argv[0], env, alias_List);
+		free(alias_List);
 		return (0);
 	}
-	if ((mode = isatty(STDIN_FILENO)))
-                puts("Interactive mode!");
-        else
-	{
-                puts("Non-interactive mode!");
-	}
+        mode = isatty(STDIN_FILENO);
 	signal(SIGINT, SIG_IGN);
 	while (ttrue)
 	{
 		if (mode)
 			print_Prompt1();
-		command = read_Cmd("argv");
+		command = read_Cmd(argv[0]);
 		if (!command)
-			continue;
+		{
+			if (mode)
+			{
+				free(command);
+				continue;
+			}
+			else
+			{
+				free(command);
+				exit(0);
+			}
+		}
 		cmd_Count = _strlen(command);
 		if (command[0] == '\0' || command[0] == '\n')
 		{
 			free(command);
 			continue;
-		}
-		if (strcmp(command, "exit\n") == 0)
-		{
-			free(command);
-			break;
 		}
 		if (cmd_Count != 0)
 		{
@@ -58,10 +60,13 @@ int main(int argc, char *argv[], char *env[])
 			free(Cmd);
 		}
 		free(command);
-		if (!mode)
-			break;
 		err_Cnt++;
 	}
+	for (x = 0; Cmd[x]; x++)
+		free(Cmd);
+	free(Cmd);
+	free(alias_List);
+	free_pwd(env);
 	return (0);
 }
 
@@ -121,14 +126,21 @@ char *read_Cmd(char *argv)
 	char *cmd_Str = NULL, *buf = NULL;
 	char *cmd_temp = NULL;
 	int ptr_len = 0, cmd_index = 0, buf_len = 0, x = 0, y;
-	int sp_sig = 0;
-	char cc, c;
 
 	(void)argv;
-	while(cmd_Check > 0)
+	while((cmd_Check = getline(&buf, &bufsize, stdin)) != -1)
 	{
-		cmd_Check = getline(&buf, &bufsize, stdin);
-		for (x = 0; buf[x] != '\0'; x++)
+		while (buf[0] == ' ')
+		{
+			buf++;
+			if (buf[0] == '\n')
+				break;
+		}
+		if (buf[0] == '\n' && buf[1] == '\0')
+		{
+			return (cmd_Str);
+		}
+       		for (x = 0; buf[x] != '\0'; x++)
 		{
 			if (buf[x + 1] == '#')
 			{
@@ -143,30 +155,7 @@ char *read_Cmd(char *argv)
 				}
 				break;
 			}
-			if (buf[x] == '\n' && buf[x + 1] != '\0')
-			{
-				buf[x] = ';', x++;
-				buf = _realloc(buf, _strlen(buf), _strlen(buf) + 1);
-				c = buf[x];
-				buf[x] = ' ', x++;
-				for (y = x; buf[y + 1]; y++)
-				{
-					cc = buf[y];
-					buf[y] = c;
-					c = buf[y + 1];
-					buf[y + 1] = cc;
-					y++;
-				}
-			}
 		}
-		printf("buf: %s\n", buf);
-		for (x = 0; buf[x]; x++)
-		{
-			if (buf[x] != ' ' && buf[x] != '\n')
-				sp_sig = 1;
-		}
-		if (sp_sig == 0)
-			break;
 		buf_len = _strlen(buf);
 		if (!cmd_Str)
 			cmd_Str = malloc(buf_len + 1);
@@ -181,23 +170,18 @@ char *read_Cmd(char *argv)
 		_strcpy(cmd_Str + ptr_len, buf);
 		if (buf[buf_len - 1] == '\n')
 		{
-			if (buf_len == 1 || buf[buf_len - 2] != '\\')
+			free(buf);
+			for (x = _strlen(cmd_Str) - 1; x >= 0; x--)
 			{
-				free(buf);
-				cmd_Str[_strlen(cmd_Str) - 1] = '\0';
-				return (cmd_Str);
+				if (cmd_Str[x] == ' ' || cmd_Str[x] == '\n')
+					cmd_Str[x] = '\0';
+				else
+					break;
 			}
-			cmd_Str[ptr_len + buf_len - 2] = '\0';
-			buf_len -= 2;
-			print_Prompt2();
+			return (cmd_Str);
 		}
 		ptr_len += buf_len;
 	}
 	free(buf);
-	if (cmd_Check == -1)
-	{
-		write(STDOUT_FILENO, "\n", 1);
-		exit(22);
-	}
 	return (cmd_Str);
 }

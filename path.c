@@ -17,6 +17,7 @@ char *get_path(char **env, char *token)
 	strp = _strdup(env[ex]);
 	strp += 5;
 	num_of_paths = get_size(strp, ':');
+	strp = add_cwd(strp);
 	paths = malloc(sizeof(char *) * (num_of_paths + 1));
 	if (!paths)
 		exit(98);
@@ -33,4 +34,71 @@ char *get_path(char **env, char *token)
 	if (final_path_idx >= 0)
 		return (paths[final_path_idx]);
 	return (NULL);
+}
+
+
+char *add_cwd(char *str)
+{
+	int x = 0, xx = 0, idx = 0, sig = 0;
+	size_t n = 20;
+	char *buf = NULL;
+	char *temp = NULL;
+
+	buf = malloc(n);
+	buf = getcwd(buf, n);
+	while (!buf)
+	{
+		n = n * 2;
+		buf = _realloc(buf, (n / 2), n);
+		buf = getcwd(buf, n);
+	}
+	temp = malloc(_strlen(str) + _strlen(buf) + 1);
+	if (str[0] == ':')
+	{
+		for (x = 0; buf[x]; x++)
+			temp[xx] = buf[x], xx++;
+		for (x = 0; str[x]; x++)
+			temp[xx] = str[x], xx++;
+		temp[xx] = '\0';
+		sig = 1;
+	}
+	else
+	{
+		for (idx = 0; str[idx]; idx++)
+		{
+			if (str[idx] == ':' && str[idx + 1] == ':')
+			{
+				sig = 1;
+				break;
+			}
+	        }
+		if (sig != 0)
+		{
+			for (x = 0; x <= idx; x++)
+				temp[xx] = str[x], xx++;
+			for (x = 0; buf[x]; x++)
+				temp[xx] = buf[x], xx++;
+			for (idx = idx + 1; str[idx]; idx++)
+				temp[xx] = str[idx], xx++;
+			temp[xx] = '\0';
+		}
+	}
+	if (str[_strlen(str) - 1] == ':')
+        {
+                for (x = 0; str[x]; x++)
+                        temp[xx] = str[x], xx++;
+                for (x = 0; buf[x]; x++)
+                        temp[xx] = buf[x];
+                temp[xx] = '\0';
+		sig = 1;
+        }
+	else if (sig == 0)
+	{
+		free(temp);
+		free(buf);
+		return (str);
+	}
+/*	free(str);
+ */	free(buf);
+	return (temp);
 }
