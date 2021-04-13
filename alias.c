@@ -56,87 +56,65 @@ void print_Alias(char *token, char *argv, ll *alias_List)
 		printf("OOPSIES\n");
 }
 
+
 /**
- * alias_Options - checks if command is alias or adding alias
- * @argv: argv[0]
- * @cmd: cmd str
- * @alias_List: alias list
- * Return: alias list
+ * add_Alias_node - adds node
+ * @alias_List: list of aliases
+ * @str: ptr
+ * Return: list_t ptr
  */
 
-ll *alias_Options(char *argv, char *cmd, ll *alias_List)
+ll *add_Alias_Node(ll **alias_List, char *str)
 {
-	int x = 1, y = 0, signal = 0, tok_idx = 0, chars = 0, words = 0;
-	char **tokes = NULL;
+	ll *temp;
 
-	dim3(cmd, &chars, &words, argv);
-	tokes = malloc(sizeof(char *) * chars + words);
-	tokes[0] = _strtok_Alias(cmd, &tok_idx, ' ');
-	for (x = 1; x < words; x++)
-		tokes[x] = _strtok_Alias(cmd, &tok_idx, ' ');
-	tokes[x] = NULL;
-	if (tokes[1] == NULL)
+	if (str == NULL)
+		return (NULL);
+	temp = malloc(sizeof(ll));
+	if (temp == NULL)
+		return (NULL);
+	temp->str = _strdup(str);
+	if (temp->str == NULL)
 	{
-		print_list(alias_List);
-		return (alias_List);
+		free(temp);
+		return (NULL);
 	}
-	for (x = 1; tokes[x]; x++)
-	{
-		for (y = 0; tokes[x][y]; y++)
-		{
-			if (tokes[x][y] == '=')
-			{
-				alias_List = add_Alias(tokes[x], argv, alias_List);
-				signal = 1;
-				break;
-			}
-		signal = 0;
-		}
-		if (signal == 0)
-			print_Alias(tokes[x], argv, alias_List);
-	}
-	for (x = 0; tokes[x]; x++)
-		free(tokes[x]);
-	free(tokes);
-	(void)signal;
-	return (alias_List);
+	temp->next = *alias_List;
+	*alias_List = temp;
+	return (*alias_List);
 }
 
 /**
- * _strtok_Alias - custom tokenizer for alias options
- * @str: string
- * @index: keeps index for tok func
- * @delim: delim to tokenize with
- * Return: token
+ * free_list - frees lists
+ * @head: head of list
+ * Return: void
  */
 
-char *_strtok_Alias(char *str, int *index, char delim)
+void free_list(ll *head)
 {
-	int x = 0, y = 0;
-	char *tok;
+	ll *temp;
 
-	if (!str)
-		return (NULL);
-	while (str[(*index)] == ' ')
-		(*index)++;
-	while (str[y + (*index)] != '\0' && str[y + (*index)] != delim)
+	while (head != NULL)
 	{
-		y++;
-		if (str[y + (*index)] == 39)
-		{
-			y++;
-			while (str[y + (*index)] != 39)
-				y++;
-			y++;
-			break;
-		}
+		temp = head;
+		head = head->next;
+		free(temp->str);
+		free(temp);
 	}
-	tok = malloc(sizeof(char) * (y + 1));
-	if (!tok)
-		return (NULL);
-	for (x = 0; x < y; x++)
-		tok[x] = str[x + (*index)];
-	tok[x] = '\0';
-	*index += x;
-	return (tok);
+}
+
+/**
+ * print_list - prints linked list
+ * @h: head of list
+ * Return: void
+ */
+
+void print_list(ll *h)
+{
+	while (h->next != NULL)
+	{
+		write(STDOUT_FILENO, h->str, _strlen(h->str));
+		h = h->next;
+	}
+	write(STDOUT_FILENO, h->str, _strlen(h->str));
 }

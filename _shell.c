@@ -71,51 +71,8 @@ int main(int argc, char *argv[], char *env[])
 }
 
 /**
- * _script - runs command script
- * @fd: File descriptor for script
- * @argv: Arguments
- * @env: Environment
- * Return: void
- */
-
-ll *_script(int fd, char *argv, char **env, ll *alias_List)
-{
-	int x = 0, xx = 0, buflen = 0, newlen = 0;
-	char *buf = NULL, tmp[1024];
-	char **Cmd = NULL;
-	ssize_t count;
-
-	while ((count = read(fd, tmp, 1024)) > 0)
-	{
-		if (buf != NULL)
-			buflen = _strlen(buf);
-		newlen = buflen + count;
-		buf = _realloc(buf, buflen, newlen);
-		for (x = 0; x < count; x++)
-		{
-			buf[xx] = tmp[x];
-			xx++;
-		}
-		buf[xx] = '\0';
-	}
-	for (x = 0; buf[x]; x++)
-	{
-		if (buf[x] == '\n')
-			buf[x] = ';';
-	}
-	if (x != 0)
-	{
-		Cmd = parser1(buf, argv);
-		alias_List = parser2(Cmd, argv, env, alias_List);
-		for (x = 0; Cmd[x]; x++)
-			free(Cmd[x]);
-		free(Cmd);
-	}
-	return (alias_List);
-}
-
-/**
  * read_Cmd - reads command into string
+ * @argv: argument
  * Return: string
  */
 
@@ -184,4 +141,139 @@ char *read_Cmd(char *argv)
 	}
 	free(buf);
 	return (cmd_Str);
+}
+
+
+/**
+ * parser1 - tokenizes multiple cmds into strings
+ * @cmd_Str: cmd string input
+ * @argv: argv[0]
+ * Return: 2d array of strings
+ */
+
+char **parser1(char *cmd_Str, char *argv)
+{
+	char **cmd_List = NULL;
+	char *tmp = NULL;
+	int x = 0, y = 0, xx = 0, cmd_Pos = 0, cmd_Str_Len = 0, cmd_Count = 1;
+
+	if (!cmd_Str)
+		return (NULL);
+	StrDimensions(cmd_Str, argv, &cmd_Str_Len, &cmd_Count);
+	cmd_List = malloc(sizeof(char *) * cmd_Str_Len + cmd_Count); /*null bytes?*/
+	if (!cmd_List)
+		return (NULL);
+	while (cmd_Str[cmd_Pos])
+	{
+		if (cmd_Str[cmd_Pos] == ';')
+			cmd_Pos++;
+		else
+		{
+			y = 0;
+			tmp = _strtok(cmd_Str, &cmd_Pos, ';');
+			if (!tmp)
+				return (NULL);
+			while (tmp[y])
+				y++;
+			cmd_List[x] = malloc(sizeof(char) * (y + 1));
+			if (!cmd_List[x])
+				return (NULL);
+			for (xx = 0; xx < y; xx++)
+				cmd_List[x][xx] = tmp[xx];
+			cmd_List[x][xx] = '\0';
+			if (tmp)
+				free(tmp);
+			x++;
+		}
+	}
+	cmd_List[x] = NULL;
+	free(cmd_Str);
+	return (cmd_List);
+}
+
+/**
+ * parser2 - tokenizes strings into tokens
+ * @cmd_List: 2d array of strings
+ * @argv: argv[0]
+ * @env: environ
+ * @alias_List: list of aliases
+ * Return: void. Passes tokens to execution func
+ */
+
+ll *parser2(char **cmd_List, char *argv, char **env, ll *alias_List)
+{
+	int x = 0, i = 0, tok_idx = 0, chars = 0, words = 0;
+	int built_In = 0;
+	char **tokes = NULL;
+	char *our_path = NULL;
+
+	for (; cmd_List[x]; x++)
+	{
+		cmd_List[x] = alias_Check(cmd_List[x], alias_List, argv);
+		dim2(cmd_List[x], &chars, &words, argv);
+		tokes = malloc(sizeof(char *) * chars + words);
+		tokes[0] = _strtok(cmd_List[x], &tok_idx, ' ');
+		if (strcmp(tokes[0], "alias") == 0)
+		{
+			alias_List = alias_Options(argv, cmd_List[x], alias_List);
+			free(tokes[0]);
+			continue;
+		}
+		for (i = 1; i < words; i++)
+		{
+			tokes[i] = _strtok(cmd_List[x], &tok_idx, ' ');
+		}
+		tokes[i] = NULL;
+		built_In = builtin(tokes, argv, env);
+		if (built_In == 0)
+		{
+			our_path = get_path(env, tokes[0]);
+			if (our_path)
+			{
+				free(tokes[0]);
+				tokes[0] = our_path;
+			}
+			exec_Cmd(tokes, argv, env);
+		}
+		for (i = 0; tokes[i]; i++)
+			free(tokes[i]);
+		free(tokes);
+		chars = 0, words = 0, tok_idx = 0;
+	}
+/*	for (x = 0; cmd_List[x]; x++)
+		free(cmd_List[x]);
+	free(cmd_List);
+*/	return (alias_List);
+}
+
+/**
+ * exec_Cmd - execute function
+ * @tokes: 2d array of tokens
+ * @argv: argv[0]
+ * @env: environment
+ * Return: void
+ */
+
+void exec_Cmd(char **tokes, char *argv, char **env)
+{
+
+	pid_t pid = fork();
+	int err_num;
+
+	(void)env;
+	if (pid != 0)
+	{
+		while (wait(NULL) != -1)
+			;
+		kill(pid, SIGKILL);
+	}
+	else
+	{
+		if (execve(tokes[0], tokes, NULL) == -1)
+		{
+			err_num = errno;
+			handle_err(argv, err_num, tokes[0]);
+			_exit(1);
+		}
+	}
 }
