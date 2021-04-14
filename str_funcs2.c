@@ -77,3 +77,47 @@ char *print_number(int n)
 	str[idx + 1] = '\0';
 	return (str);
 }
+
+/**
+ * cat_err - concats error message
+ * @temp: return string
+ * @num: error number
+ * @argv: argument
+ * @var: special message
+ * @token: token
+ * Return: temp
+ */
+
+char *cat_err(char *temp, char *num, char *argv, char *var, char *token)
+{
+	temp = malloc(_strlen(argv) + 3);
+	_strcat(temp, argv);
+	_strcat(temp, ": ");
+	temp = _realloc(temp, _strlen(temp),
+		_strlen(temp) + _strlen(num) + 2);
+	_strcat(temp, num);
+	_strcat(temp, ": ");
+	temp = _realloc(temp, _strlen(temp),
+			_strlen(temp) + _strlen(token) + 2);
+	_strcat(temp, token);
+	_strcat(temp, ": ");
+	temp = _realloc(temp, _strlen(temp),
+			_strlen(temp) + _strlen(var) + 1);
+	_strcat(temp, var);
+	return (temp);
+}
+
+/**
+ * free_2d - frees 2d array
+ * @arr: 2d array
+ * Return: void
+ */
+
+void free_2d(char **arr)
+{
+	int x = 0;
+
+	for (x = 0; arr[x]; x++)
+		free(arr[x]);
+	free(arr);
+}

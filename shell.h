@@ -13,21 +13,29 @@
 #include <signal.h>
 #include <limits.h>
 /* STRUCTS */
+/**
+ * struct linked_list - linked list struct
+ * @str: string value
+ * @next: next node address
+ */
 typedef struct linked_list
-{
-        char *str;
-        struct linked_list *next;
-} ll;
-typedef struct built_in
-{
-	char *var;
-	char * (*f)(char **cmd_list, ll *alias_list, char *free_env_list, char **tokes, char *argv, char **env);
-} b_in;
-/*typedef struct linked_list
 {
 	char *str;
 	struct linked_list *next;
-	} ll;*/
+} ll;
+/**
+ * struct built_in - built_in struct
+ * @var: built_in command
+ * @f: function pointer
+ */
+typedef struct built_in
+{
+	char *var;
+	char * (*f)(char **cmd_list, ll *alias_list, char *free_env_list,
+				char **tokes, char *argv, char **env);
+} b_in;
+/* Global vars */
+extern int errno;
 /* Prototypes */
 void free_list(ll *head);
 char *_strtok(char *str, int *index, char delim);
@@ -38,7 +46,8 @@ char *_strdup(char *str);
 void dim2(char *str, int *chars, int *words, char *argv);
 ll *parser2(char **cmd_List, char *argv, char **env, ll *alias_List);
 char **parser1(char *cmd_Str, char *argv);
-void StrDimensions(char *cmd_Str, char *argv, int *cmd_Str_Len, int *cmd_Count);
+void StrDimensions(char *cmd_Str, char *argv,
+	 int *cmd_Str_Len, int *cmd_Count);
 char *read_Cmd(char *argv);
 void exec_Cmd(char **tokes, char *argv, char **env);
 char *_realloc(char *ptr, unsigned int old_size, unsigned int new_size);
@@ -93,16 +102,10 @@ int myAtoi(char *s);
 char *_strcat(char *str, char *str2);
 int _strcmp(char *s1, char *s2);
 void free_2d(char **arr);
-void script_check(int argc, char *argv[], char **env, ll *alias_List, char *free_env_list, char **Cmd);
+void script_check(int argc, char *argv[], char **env, ll *alias_List,
+			 char *free_env_list, char **Cmd);
 char *comment_check(char *buf);
 char *cat_err(char *temp, char *num, char *argv, char *var, char *token);
 char *findcwd(char *buf, size_t n);
-char *hit_sig(char *temp, int idx, char *buf, char *str);
-/*size_t list_len(const list_t *h);
-void free_list(list_t *head);
-list_t *add_node(list_t **head, const char *str);
-listint_t *get_nodeint_at_index(listint_t *head, unsigned int index);
-int append_text_to_file(const char *filename, char *text_content);
-listint_t *insert_nodeint_at_index(listint_t **head, unsigned int idx, int n);
-*/
+char *cwd_cat(char *temp, int idx, char *buf, char *str);
 #endif

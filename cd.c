@@ -1,5 +1,16 @@
 #include "shell.h"
-extern int errno;
+
+/**
+ * _cd - change directory
+ * @cmd_list: list of commands
+ * @alias_list: list of aliases
+ * @free_env_list: env vars to be freed
+ * @tokes: tokens
+ * @argv: Argument
+ * @env: environment
+ * Return: free_env_list
+ */
+
 char *_cd(char **cmd_list, ll *alias_list,
 	  char *free_env_list, char **tokes, char *argv, char **env)
 {
@@ -41,6 +52,14 @@ char *_cd(char **cmd_list, ll *alias_list,
 	free(path);
 	return (free_env_list);
 }
+
+/**
+ * findcwd - finds PWD
+ * @buf: string to put PWD
+ * @n: integer input
+ * Return: buf
+ */
+
 char *findcwd(char *buf, size_t n)
 {
 	buf = malloc(n);
@@ -53,29 +72,17 @@ char *findcwd(char *buf, size_t n)
 	}
 	return (buf);
 }
-char *get_home(char *home, char **env)
-{
-	int idx= 0, x = 4, xx = 0;
 
+/**
+ * get_old_dir - gets previous directory
+ * @old: old directory
+ * @env: environment
+ * Return: old directory
+ */
 
-        while (env[idx])
-	{
-                if (_strncmp(env[idx], "HOME=", 5) == 0)
-                        break;
-                idx++;
-        }
-	home = malloc(_strlen(env[idx]) - 4);
-	for (x = 5; env[idx][x]; x++)
-	{
-		home[xx] = env[idx][x], xx++;
-	}
-	home[xx] = '\0';
-	return (home);
-}
 char *get_old_dir(char *old, char **env)
 {
 	int idx = 0, x = 7, xx = 0;
-
 
 	while (env[idx])
 	{
@@ -89,6 +96,14 @@ char *get_old_dir(char *old, char **env)
 	old[xx] = '\0';
 	return (old);
 }
+
+/**
+ * set_old_pwd - sets old pwd
+ * @str: str to hold env idx
+ * @env: environment
+ * Return: void
+ */
+
 void set_old_pwd(char *str, char **env)
 {
 	int idx = 0;
@@ -101,6 +116,14 @@ void set_old_pwd(char *str, char **env)
 	}
 	env[idx] = str;
 }
+
+/**
+ * set_pwd - sets pwd
+ * @str: str to hold env idx
+ * @env: environment
+ * Return: old pwd
+ */
+
 char *set_pwd(char *str, char **env)
 {
 	int idx = 0, x = 0, xx = 0;
@@ -108,7 +131,7 @@ char *set_pwd(char *str, char **env)
 
 	while (env[idx])
 	{
-		if(_strncmp(env[idx], "PWD=", 4) == 0)
+		if (_strncmp(env[idx], "PWD=", 4) == 0)
 			break;
 		idx++;
 	}

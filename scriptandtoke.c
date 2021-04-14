@@ -1,6 +1,4 @@
 #include "shell.h"
-extern int err_Cnt;
-extern int errno;
 
 /**
  * _strtok - Returns next word of input string
@@ -78,4 +76,36 @@ ll *_script(int fd, char *argv, char **env, ll *alias_List)
 		free(Cmd);
 	}
 	return (alias_List);
+}
+
+/**
+ * exec_Cmd - execute function
+ * @tokes: 2d array of tokens
+ * @argv: argv[0]
+ * @env: environment
+ * Return: void
+ */
+
+void exec_Cmd(char **tokes, char *argv, char **env)
+{
+
+	pid_t pid = fork();
+	int err_num;
+
+	(void)env;
+	if (pid != 0)
+	{
+		while (wait(NULL) != -1)
+			;
+		kill(pid, SIGKILL);
+	}
+	else
+	{
+		if (execve(tokes[0], tokes, NULL) == -1)
+		{
+			err_num = errno;
+			handle_err(argv, err_num, tokes[0]);
+			_exit(1);
+		}
+	}
 }
