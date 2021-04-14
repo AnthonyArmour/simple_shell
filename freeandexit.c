@@ -51,13 +51,10 @@ char *my_exit(char **cmd_list, ll *alias_list,
 {
 	int num = 0, err_num = 0;
 
-	(void)free_env_list;
-	(void)cmd_list;
-	(void)alias_list;
-	(void)argv;
-	(void)env;
+
 	if (tokes[1] == NULL)
 	{
+		free_2d(tokes);
 		free_env(env, free_env_list);
 		free_rm(cmd_list, alias_list);
 		exit(0);
@@ -67,11 +64,13 @@ char *my_exit(char **cmd_list, ll *alias_list,
 		num = myAtoi(tokes[1]);
 		if (num < 0 || _strlen(tokes[1]) > 10)
 		{
+			free_2d(tokes);
 			err_num = 122;
 			handle_err(argv, err_num, tokes[1]);
 		}
 		else
 		{
+			free_2d(tokes);
 			free_env(env, free_env_list);
 			free_rm(cmd_list, alias_list);
 			exit(num);

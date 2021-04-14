@@ -38,17 +38,34 @@ char *comment_check(char *buf)
 {
 	int x = 0, y = 0;
 
-	while (buf[0] == ' ')
+	if (buf[0] == '\n' && buf[1] == '\0')
+        {
+                free(buf);
+                return (NULL);
+        }
+	for (x = _strlen(buf) - 1; x >= 0; x--)
+	{
+		if (buf[x - 1] != ' ' && buf[x - 1] != '\n')
+		{
+			buf[x] = '\n';
+			break;
+		}
+		if (buf[x] == ' ' || buf[x] == '\n')
+			buf[x] = '\0';
+		if (x - 1 == 0 && (buf[x - 1] == ' ' || buf[x - 1] == '\n'))
+		{
+			free(buf);
+			return (NULL);
+		}
+	}
+
+/*	while (buf[0] == ' ')
 	{
 		buf++;
 		if (buf[0] == '\n')
 			break;
 	}
-	if (buf[0] == '\n' && buf[1] == '\0')
-	{
-		free(buf);
-		return (NULL);
-	}
+*/
 	for (x = 0; buf[x] != '\0'; x++)
 	{
 		if (buf[x + 1] == '#')

@@ -20,12 +20,11 @@ char *alias_Check(char *cmd_Str, ll *alias_List, char *argv)
 		tokes[i] = _strtok(cmd_Str, &tok_idx, ' ');
 	tokes[i] = NULL;
 	if (alias_List != NULL)
-	{
 		alias_Cmd = rep_Alias(alias_List, argv, tokes, &idx, &len);
-	}
 	if (alias_Cmd != NULL)
 	{
 		new_Cmd = reset_Cmd(alias_Cmd, argv, cmd_Str, idx, len);
+		free(alias_Cmd);
 		return (new_Cmd);
 	}
 	else
@@ -33,6 +32,7 @@ char *alias_Check(char *cmd_Str, ll *alias_List, char *argv)
 		for (x = 0; tokes[x]; x++)
 			free(tokes[x]);
 		free(tokes);
+		free(alias_Cmd);
 		return (cmd_Str);
 	}
 }
@@ -134,6 +134,7 @@ char *rep_Alias(ll *alias_List, char *argv, char **tokes, int *idx, int *len)
 		cmd_Str += ((*len) + 2);
 		cmd_Str[_strlen(cmd_Str) - 1] = '\0';
 	}
+	free_2d(tokes);
 	return (cmd_Str);
 }
 
@@ -177,9 +178,7 @@ ll *alias_Options(char *argv, char *cmd, ll *alias_List)
 		if (signal == 0)
 			print_Alias(tokes[x], argv, alias_List);
 	}
-	for (x = 0; tokes[x]; x++)
-		free(tokes[x]);
-	free(tokes);
+	free_2d(tokes);
 	(void)signal;
 	return (alias_List);
 }

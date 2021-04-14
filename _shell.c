@@ -15,6 +15,7 @@ int main(int argc, char *argv[], char *env[])
 	char **Cmd = NULL;
 	ll *alias_List = NULL;
 
+	err_Cnt = 1;
 	script_check(argc, argv, env, alias_List, free_env_list, Cmd);
 	mode = isatty(STDIN_FILENO);
 	signal(SIGINT, SIG_IGN);
@@ -39,10 +40,10 @@ int main(int argc, char *argv[], char *env[])
 		if (cmd_Count != 0)
 		{
 			Cmd = parser1(command, argv[0]);
+			free(command);
 			alias_List = parser2(Cmd, argv[0], env, alias_List);
 			free_2d(Cmd);
 		}
-		free(command);
 		err_Cnt++;
 	}
 	free_env(env, free_env_list);
@@ -95,6 +96,7 @@ char *read_Cmd(char *argv)
 		ptr_len += buf_len; }
 	if (cmd_Check == -1)
 	{write(STDOUT_FILENO, "\n", 1);
+		free(buf);
 		exit(0); }
 	free(buf);
 	return (cmd_Str);
@@ -171,7 +173,7 @@ ll *parser2(char **cmd_List, char *argv, char **env, ll *alias_List)
 		if (_strcmp(tokes[0], "alias") == 0)
 		{
 			alias_List = alias_Options(argv, cmd_List[x], alias_List);
-			free(tokes[0]);
+			free_2d(tokes);
 			continue;
 		}
 		for (i = 1; i < words; i++)
@@ -184,11 +186,19 @@ ll *parser2(char **cmd_List, char *argv, char **env, ll *alias_List)
 		if (ret == 0)
 		{
 			our_path = get_path(env, tokes[0]);
+			printf("AFTER GET PATH\n");
 			if (our_path)
 			{
-				free(tokes[0]);
 				tokes[0] = our_path;
 			}
+			else
+			{
+				handle_err(argv, 2, tokes[0]);
+				free_2d(tokes);
+				continue;
+			}
+			printf("HERE EXECVE\n");
+			printf("path is = %s\n", tokes[0]);
 			exec_Cmd(tokes, argv, env);
 		}
 		for (i = 0; tokes[i]; i++)
@@ -196,7 +206,9 @@ ll *parser2(char **cmd_List, char *argv, char **env, ll *alias_List)
 		free(tokes);
 		chars = 0, words = 0, tok_idx = 0;
 	}
-return (alias_List);
+/*	if (tokes)
+		free_2d(tokes);
+*/return (alias_List);
 }
 
 /**
@@ -210,33 +222,37 @@ return (alias_List);
 void handle_err(char *argv, int err_num, char *token)
 {
 	char *temp = NULL;
-	char *num;
+	char *num = NULL;
 	int error_cnt = 0;
 	char *not_found = "not found\n", *illegal = "Illegal number\n";
 
 	error_cnt = err_Cnt;
-	num = print_number(error_cnt);
-	temp = malloc(_strlen(argv) + 3);
-	_strcat(temp, argv);
+	num = print_number(num, error_cnt);
+/*	temp = malloc(_strlen(argv) + 3);
+	for (x = 0; temp[x]; x++)
+		temp[x] = argv[x];
+	temp[x] = '\0';
 	_strcat(temp, ": ");
 	temp = _realloc(temp, _strlen(temp),
 			_strlen(temp) + _strlen(num) + 2);
 	_strcat(temp, num);
 	_strcat(temp, ": ");
-	if (err_num == 2 || err_num == 20)
+*/	if (err_num == 2 || err_num == 20)
 	{
-		temp = cat_err(temp, num, argv, not_found, token);
+		temp = cat_err(num, argv, not_found, token);
 		write(STDERR_FILENO, temp, _strlen(temp));
 	}
 	else if (err_num == 122)
 	{
-		temp = cat_err(temp, num, argv, illegal, token);
+		temp = cat_err(num, argv, illegal, token);
 		write(STDERR_FILENO, temp, _strlen(temp));
 	}
 	else
 	{
+		temp = cat_err(num, argv, "No such file or directory", token);
 		write(STDERR_FILENO, temp, _strlen(temp));
 		perror(token);
 	}
 	free(temp);
+	free(num);
 }

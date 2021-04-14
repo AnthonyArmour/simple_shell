@@ -82,7 +82,7 @@ char *_strtok_Alias(char *str, int *index, char delim);
 char *alias_Check(char *cmd_Str, ll *alias_List, char *argv);
 char *reset_Cmd(char *alias_Cmd, char *argv, char *cmd_Str, int idx, int len);
 char *rep_Alias(ll *alias_List, char *argv, char **tokes, int *idx, int *len);
-char *print_number(int n);
+char *print_number(char *str, int n);
 void handle_err(char *argv, int err_num, char *token);
 char *add_cwd(char *str);
 char *_cd(char **cmd_list, ll *alias_list,
@@ -105,7 +105,7 @@ void free_2d(char **arr);
 void script_check(int argc, char *argv[], char **env, ll *alias_List,
 			 char *free_env_list, char **Cmd);
 char *comment_check(char *buf);
-char *cat_err(char *temp, char *num, char *argv, char *var, char *token);
+char *cat_err(char *num, char *argv, char *var, char *token);
 char *findcwd(char *buf, size_t n);
 char *cwd_cat(char *temp, int idx, char *buf, char *str);
 #endif
