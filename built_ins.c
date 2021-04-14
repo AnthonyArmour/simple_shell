@@ -3,9 +3,13 @@ extern int errno;
 
 /**
  * builtin - checks if command is builtin
+ * @cmd_list: List of commands
+ * @alias_list: List of aliases
+ * @free_env_list: List of envs
  * @tokes: command string
  * @argv: argv 0
  * @env: environment
+ * @ret: signal value for parser2 function
  * Return: 0 if not builtin
  */
 
@@ -32,21 +36,14 @@ char *builtin(char **cmd_list, ll *alias_list,
 	return (free_env_list);
 }
 
-/*
-{"help", _help}
-void _help(char **tokes, char *argv, char **env)
-{
-//something like this!
-	{"exit", my_exit}, {"setenv", _setenv}, {"env", b_env},
-	{"unsetenv", _unsetenv}, {"help", _help}, {NULL, NULL}
-}
-*/
-
 /**
  * _setenv - sets environment
  * @tokes: tokens
  * @argv: argv[0]
  * @env: environment
+ * @cmd_list: list of commands
+ * @alias_list: list of aliases
+ * @free_env_list: list of envs
  * Return: int
  */
 
@@ -81,6 +78,13 @@ char *_setenv(char **cmd_list, ll *alias_list,
 	return (free_env_list);
 }
 
+/**
+ * add_to_free_env - adds to free env list
+ * @free_env_list: where we are adding
+ * @token: what we are adding
+ * Return: env list
+ */
+
 char *add_to_free_env(char *free_env_list, char *token)
 {
 	int newsize = 0, len = 0, x = 0;
@@ -107,6 +111,9 @@ char *add_to_free_env(char *free_env_list, char *token)
  * @tokes: tokens
  * @argv: argv[0]
  * @env: environment
+ * @cmd_list: list of commadns
+ * @alias_list: list of aliases
+ * @free_env_list: list of envs
  * Return: int
  */
 
@@ -137,6 +144,14 @@ char *_unsetenv(char **cmd_list, ll *alias_list,
 	}
 	return (free_env_list);
 }
+
+/**
+ * remove_free_list_node - Remvoes a node from our list
+ * @free_env_list: List of tokes
+ * @token: What to remove
+ * Return: our list
+ */
+
 char *remove_free_list_node(char *free_env_list, char *token)
 {
 	int x = 0, sig = 0, y = 0;
@@ -163,6 +178,9 @@ char *remove_free_list_node(char *free_env_list, char *token)
  * @tokes: tokens
  * @argv: argv[0]
  * @env: environment
+ * @cmd_list: list of commands
+ * @alias_list: list of aliasaes
+ * @free_env_list: list of envs
  * Return: int
  */
 
@@ -180,4 +198,4 @@ char *b_env(char **cmd_list, ll *alias_list,
 		write(STDOUT_FILENO, "\n", 1);
 	}
 	return (free_env_list);
-} 
+}
