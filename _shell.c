@@ -66,7 +66,10 @@ char *read_Cmd(void)
 	while ((cmd_Check = getline(&buf, &bufsize, stdin)) != -1)
 	{buf = comment_check(buf);
 		if (!buf)
+		{
+			print_Prompt1();
 			continue;
+		}
 		buf_len = _strlen(buf);
 		if (!cmd_Str)
 			cmd_Str = malloc(buf_len + 1);
@@ -93,7 +96,8 @@ char *read_Cmd(void)
 		}
 		ptr_len += buf_len; }
 	if (cmd_Check == -1)
-	{write(STDOUT_FILENO, "\n", 1);
+	{
+/*		write(STDOUT_FILENO, "\n", 1);*/
 		free(buf);
 		exit(0); }
 	free(buf);
