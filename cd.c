@@ -18,7 +18,7 @@ char *_cd(char **cmd_list, ll *alias_list,
 	temp[x] = '\0';
 	if (!tokes[1])
 		path = get_home(path, env);
-	else if (strcmp(tokes[1], "-") == 0)
+	else if (_strcmp(tokes[1], "-") == 0)
 		path = get_old_dir(path, env);
 	else
 	{
@@ -44,12 +44,12 @@ char *_cd(char **cmd_list, ll *alias_list,
 			buf = getcwd(buf, n);
 		}
 		temp = _realloc(temp, 5, _strlen(buf) + 5);
-			temp = strcat(temp, buf);
+			temp = _strcat(temp, buf);
 		free(buf);
 		old_pwd = set_pwd(temp, env);
 		set_old_pwd(old_pwd, env);
 		free_env_list = add_to_free_env(free_env_list, "OLDPWD");
-		free_env_list =add_to_free_env(free_env_list, "PWD");
+		free_env_list = add_to_free_env(free_env_list, "PWD");
 	}
 	free(path);
 	return (free_env_list);
@@ -61,7 +61,7 @@ char *get_home(char *home, char **env)
 
         while (env[idx])
 	{
-                if (strncmp(env[idx], "HOME=", 5) == 0)
+                if (_strncmp(env[idx], "HOME=", 5) == 0)
                         break;
                 idx++;
         }
@@ -80,7 +80,7 @@ char *get_old_dir(char *old, char **env)
 
 	while (env[idx])
 	{
-		if (strncmp(env[idx], "OLDPWD=", 7) == 0)
+		if (_strncmp(env[idx], "OLDPWD=", 7) == 0)
 			break;
 		idx++;
 	}
@@ -96,7 +96,7 @@ void set_old_pwd(char *str, char **env)
 
 	while (env[idx])
 	{
-		if (strncmp(env[idx], "OLDPWD=", 7) == 0)
+		if (_strncmp(env[idx], "OLDPWD=", 7) == 0)
 			break;
 		idx++;
 	}
@@ -109,7 +109,7 @@ char *set_pwd(char *str, char **env)
 
 	while (env[idx])
 	{
-		if(strncmp(env[idx], "PWD=", 4) == 0)
+		if(_strncmp(env[idx], "PWD=", 4) == 0)
 			break;
 		idx++;
 	}

@@ -21,7 +21,7 @@ char *builtin(char **cmd_list, ll *alias_list,
 	*ret = 0;
 	for (x = 0; built_in[x].var; x++)
 	{
-		if ((strcmp(tokes[0], built_in[x].var)) == 0)
+		if ((_strcmp(tokes[0], built_in[x].var)) == 0)
 		{
 			free_env_list = built_in[x].f(cmd_list, alias_list,
 						      free_env_list, tokes, argv, env);
@@ -61,7 +61,7 @@ char *_setenv(char **cmd_list, ll *alias_list,
 	(void)argv;
 	while (env[x])
 	{
-		if (strncmp(env[x], tokes[1], _strlen(tokes[1])) == 0)
+		if (_strncmp(env[x], tokes[1], _strlen(tokes[1])) == 0)
 			break;
 		x++;
 	}
@@ -120,7 +120,7 @@ char *_unsetenv(char **cmd_list, ll *alias_list,
 	(void)argv;
 	while (env[x])
 	{
-		if (strncmp(env[x], tokes[1], _strlen(tokes[1])) == 0)
+		if (_strncmp(env[x], tokes[1], _strlen(tokes[1])) == 0)
 			break;
 		x++;
 	}
@@ -143,7 +143,7 @@ char *remove_free_list_node(char *free_env_list, char *token)
 
 	for (x = 0; free_env_list[x]; x++)
 	{
-		if (strncmp((free_env_list + x), token, _strlen(token)) == 0)
+		if (_strncmp((free_env_list + x), token, _strlen(token)) == 0)
 		{
 			sig = 1;
 		}
@@ -180,4 +180,4 @@ char *b_env(char **cmd_list, ll *alias_list,
 		write(STDOUT_FILENO, "\n", 1);
 	}
 	return (free_env_list);
-}
+} 

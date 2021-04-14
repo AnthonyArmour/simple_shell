@@ -29,11 +29,11 @@ void print_Alias(char *token, char *argv, ll *alias_List)
 {
 	int signal = 0;
 
-	strcat(token, "=");
+	_strcat(token, "=");
 	(void)argv;
 	while (alias_List->next != NULL)
 	{
-		if ((strncmp(alias_List->str, token, _strlen(token))) == 0)
+		if ((_strncmp(alias_List->str, token, _strlen(token))) == 0)
 		{
 			write(STDOUT_FILENO, alias_List->str, _strlen(alias_List->str));
 			write(STDOUT_FILENO, "\n", 1);
@@ -45,7 +45,7 @@ void print_Alias(char *token, char *argv, ll *alias_List)
 	}
 	if (alias_List->next == NULL)
 	{
-		if ((strncmp(alias_List->str, token, _strlen(token))) == 0)
+		if ((_strncmp(alias_List->str, token, _strlen(token))) == 0)
 		{
 			write(STDOUT_FILENO, alias_List->str, _strlen(alias_List->str));
 			write(STDOUT_FILENO, "\n", 1);

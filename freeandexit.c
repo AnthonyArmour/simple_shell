@@ -1,4 +1,5 @@
 #include "shell.h"
+extern int errno;
 void free_env(char **env, char *free_env_list)
 {
         int idx = 0, x = 0, sig = 0;
@@ -9,7 +10,7 @@ void free_env(char **env, char *free_env_list)
 	{
 		while(env[idx])
 		{
-			if (strncmp((free_env_list + x), env[idx],
+			if (_strncmp((free_env_list + x), env[idx],
 				    xstrlen(free_env_list + x)) == 0)
 			{
 				free(env[idx]);
@@ -38,6 +39,8 @@ void free_env(char **env, char *free_env_list)
 char *my_exit(char **cmd_list, ll *alias_list,
 	      char *free_env_list, char **tokes, char *argv, char **env)
 {
+	int num = 0, err_num = 0;
+
 	(void)free_env_list;
 	(void)cmd_list;
 	(void)alias_list;
@@ -51,9 +54,18 @@ char *my_exit(char **cmd_list, ll *alias_list,
 	}
 	else
 	{
-		free_env(env, free_env_list);
-		free_rm(cmd_list, alias_list);
- 		exit(atoi(tokes[1]));
+		num = myAtoi(tokes[1]);
+		if (num < 0 || _strlen(tokes[1]) > 10)
+		{
+			err_num = 122;
+			handle_err(argv, err_num, tokes[1]);
+		}
+		else
+		{
+			free_env(env, free_env_list);
+			free_rm(cmd_list, alias_list);
+ 			exit(num);
+		}
 	}
 	return (free_env_list);
 }

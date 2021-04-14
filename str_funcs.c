@@ -65,32 +65,6 @@ char *_strcpy(char *dest, char *src)
 	*(dest + x) = *(src + x);
 	return (dest);
 }
-/**
- * _strcat - concatinate string
- * @dest: str input
- * @src: str input
- * Return: string
- */
-
-char *_strcat(char *dest, char *src)
-{
-	int dest_len = 0;
-	int x = 0;
-
-	if (!dest)
-		return (NULL);
-	while (dest[dest_len] != '\0')
-	{
-		dest_len++;
-	}
-	for (; src[x] != '\0'; x++)
-	{
-		dest[dest_len] = src[x];
-		dest_len++;
-	}
-	dest[dest_len] = '\0';
-	return (dest);
-}
 
 /**
  * _realloc - reallocates mem
@@ -126,4 +100,24 @@ char *_realloc(char *ptr, unsigned int old_size, unsigned int new_size)
 	nptr[x] = '\0';
 	free(ptr);
 	return (nptr);
+}
+
+/**
+ * _strcmp - compares two strings
+ * @s1: str input
+ * @s2: str input
+ * Return: int
+ */
+
+int _strcmp(char *s1, char *s2)
+{
+	int x = 0;
+	for (; s1[x] != '\0'; x++)
+	{
+		if (s1[x] != s2[x])
+		{
+			return (s1[x] - s2[x]);
+		}
+	}
+	return (s1[x] - s2[x]);
 }

@@ -109,11 +109,11 @@ char *rep_Alias(ll *alias_List, char *argv, char **tokes, int *idx, int *len)
 	for ((*idx) = 0; tokes[(*idx)]; (*idx)++)
 	{
 		*len = _strlen(tokes[(*idx)]);
-		tokes[(*idx)] = realloc(tokes[(*idx)], (*len) + 1);
-		strcat(tokes[(*idx)], "=\0");
+		tokes[(*idx)] = _realloc(tokes[(*idx)], (*len), (*len) + 1);
+		_strcat(tokes[(*idx)], "=\0");
 		while (alias_List->next != NULL)
 		{
-			if ((strncmp(tokes[(*idx)], alias_List->str, (*len) + 1)) == 0)
+			if ((_strncmp(tokes[(*idx)], alias_List->str, (*len) + 1)) == 0)
 			{
 				cmd_Str = _strdup(alias_List->str);
 				break;
@@ -122,7 +122,7 @@ char *rep_Alias(ll *alias_List, char *argv, char **tokes, int *idx, int *len)
 		}
 		if (cmd_Str == NULL)
 		{
-			if ((strncmp(tokes[(*idx)], alias_List->str, (*len) + 1)) == 0)
+			if ((_strncmp(tokes[(*idx)], alias_List->str, (*len) + 1)) == 0)
 			{
 				cmd_Str = _strdup(alias_List->str);
 			}
