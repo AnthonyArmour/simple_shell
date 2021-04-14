@@ -35,7 +35,6 @@ char *_cd(char **cmd_list, ll *alias_list,
 	if (chdir(path) < 0)
 	{
 		err_num = errno;
-		free(path);
 		handle_err(argv, err_num, tokes[1]);
 	}
 	else
@@ -44,11 +43,15 @@ char *_cd(char **cmd_list, ll *alias_list,
 		temp = _realloc(temp, 5, _strlen(buf) + 5);
 			temp = _strcat(temp, buf);
 		free(buf);
+		printf("BEFORE SETPWD\n");
 		old_pwd = set_pwd(temp, env);
+		printf("BEFORE SETOLDPWD\n");
 		set_old_pwd(old_pwd, env);
+		printf("BEFORE FREE ENV LIST\n");
 		free_env_list = add_to_free_env(free_env_list, "OLDPWD");
 		free_env_list = add_to_free_env(free_env_list, "PWD");
 	}
+	free(temp);
 	free(path);
 	return (free_env_list);
 }

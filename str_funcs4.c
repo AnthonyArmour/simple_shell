@@ -21,7 +21,7 @@ void script_check(int argc, char *argv[], char **env, ll *alias_List,
 		fd = open(argv[1], O_RDONLY);
 		if (fd == -1)
 			exit(22);
-		alias_List = _script(fd, argv[0], env, alias_List);
+		alias_List = _script(fd, argv[0], env, alias_List, free_env_list);
 		free_env(env, free_env_list);
 		free_rm(Cmd, alias_List);
 		exit(0);
@@ -39,10 +39,10 @@ char *comment_check(char *buf)
 	int x = 0, y = 0;
 
 	if (buf[0] == '\n' && buf[1] == '\0')
-        {
-                free(buf);
-                return (NULL);
-        }
+	{
+		free(buf);
+		return (NULL);
+	}
 	for (x = _strlen(buf) - 1; x >= 0; x--)
 	{
 		if (buf[x - 1] != ' ' && buf[x - 1] != '\n')
@@ -58,14 +58,6 @@ char *comment_check(char *buf)
 			return (NULL);
 		}
 	}
-
-/*	while (buf[0] == ' ')
-	{
-		buf++;
-		if (buf[0] == '\n')
-			break;
-	}
-*/
 	for (x = 0; buf[x] != '\0'; x++)
 	{
 		if (buf[x + 1] == '#')
@@ -83,4 +75,40 @@ char *comment_check(char *buf)
 		}
 	}
 	return (buf);
+}
+/**
+ * cat_err2 - concats error message
+ * @num: error number
+ * @argv: argument
+ * @var: special message
+ * @token: token
+ * Return: temp
+ */
+
+char *cat_err2(char *num, char *argv, char *var, char *token)
+{
+	int x = 0;
+	char *temp = NULL, *col_space = ": ";
+
+	temp = malloc(_strlen(argv) + 3);
+	for (x = 0; argv[x]; x++)
+		temp[x] = argv[x];
+	temp[x] = '\0';
+	_strcat(temp, col_space);
+
+	temp = _realloc(temp, _strlen(temp) + 1,
+			_strlen(temp) + _strlen(num) + 3);
+	_strcat(temp, num);
+	_strcat(temp, col_space);
+
+	temp = _realloc(temp, _strlen(temp) + 1,
+			_strlen(temp) + _strlen(var) + 3);
+	_strcat(temp, var);
+	_strcat(temp, col_space);
+
+	temp = _realloc(temp, _strlen(temp) + 1,
+			_strlen(temp) + _strlen(token) + 1);
+	_strcat(temp, token);
+	_strcat(temp, "\n");
+	return (temp);
 }

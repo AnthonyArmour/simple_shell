@@ -15,6 +15,7 @@ int main(int argc, char *argv[], char *env[])
 	char **Cmd = NULL;
 	ll *alias_List = NULL;
 
+	free_env_list = NULL;
 	err_Cnt = 1;
 	script_check(argc, argv, env, alias_List, free_env_list, Cmd);
 	mode = isatty(STDIN_FILENO);
@@ -23,7 +24,7 @@ int main(int argc, char *argv[], char *env[])
 	{
 		if (mode)
 			print_Prompt1();
-		command = read_Cmd(argv[0]);
+		command = read_Cmd();
 		if (!command)
 		{
 			if (mode)
@@ -41,34 +42,31 @@ int main(int argc, char *argv[], char *env[])
 		{
 			Cmd = parser1(command, argv[0]);
 			free(command);
-			alias_List = parser2(Cmd, argv[0], env, alias_List);
+			alias_List = parser2(Cmd, argv[0], env, alias_List
+					     , free_env_list);
 			free_2d(Cmd);
 		}
 		err_Cnt++;
 	}
-	free_env(env, free_env_list);
-	free_rm(Cmd, alias_List);
 	return (0);
 }
 
 /**
  * read_Cmd - reads command into string
- * @argv: argument
  * Return: string
  */
 
-char *read_Cmd(char *argv)
+char *read_Cmd(void)
 {
 	size_t bufsize = 1024;
 	ssize_t cmd_Check = 1;
 	char *cmd_Str = NULL, *buf = NULL, *cmd_temp = NULL;
 	int ptr_len = 0, cmd_index = 0, buf_len = 0, x = 0;
 
-	(void)argv;
 	while ((cmd_Check = getline(&buf, &bufsize, stdin)) != -1)
 	{buf = comment_check(buf);
 		if (!buf)
-			return (cmd_Str);
+			continue;
 		buf_len = _strlen(buf);
 		if (!cmd_Str)
 			cmd_Str = malloc(buf_len + 1);
@@ -154,10 +152,12 @@ char **parser1(char *cmd_Str, char *argv)
  * @argv: argv[0]
  * @env: environ
  * @alias_List: list of aliases
+ * @free_env_list: list of env vars to be freed
  * Return: void. Passes tokens to execution func
  */
 
-ll *parser2(char **cmd_List, char *argv, char **env, ll *alias_List)
+ll *parser2(char **cmd_List, char *argv, char **env, ll *alias_List
+	    , char *free_env_list)
 {
 	int x = 0, i = 0, tok_idx = 0, chars = 0, words = 0;
 	int ret = 0;
@@ -177,38 +177,27 @@ ll *parser2(char **cmd_List, char *argv, char **env, ll *alias_List)
 			continue;
 		}
 		for (i = 1; i < words; i++)
-		{
 			tokes[i] = _strtok(cmd_List[x], &tok_idx, ' ');
-		}
 		tokes[i] = NULL;
 		free_env_list = builtin(cmd_List, alias_List,
 					free_env_list, tokes, argv, env, &ret);
 		if (ret == 0)
 		{
 			our_path = get_path(env, tokes[0]);
-			printf("AFTER GET PATH\n");
 			if (our_path)
-			{
 				tokes[0] = our_path;
-			}
 			else
 			{
 				handle_err(argv, 2, tokes[0]);
 				free_2d(tokes);
 				continue;
 			}
-			printf("HERE EXECVE\n");
-			printf("path is = %s\n", tokes[0]);
 			exec_Cmd(tokes, argv, env);
 		}
-		for (i = 0; tokes[i]; i++)
-			free(tokes[i]);
-		free(tokes);
+		free_2d(tokes);
 		chars = 0, words = 0, tok_idx = 0;
 	}
-/*	if (tokes)
-		free_2d(tokes);
-*/return (alias_List);
+return (alias_List);
 }
 
 /**
@@ -224,27 +213,18 @@ void handle_err(char *argv, int err_num, char *token)
 	char *temp = NULL;
 	char *num = NULL;
 	int error_cnt = 0;
-	char *not_found = "not found\n", *illegal = "Illegal number\n";
+	char *not_found = "not found\n", *illegal = "Illegal number";
 
 	error_cnt = err_Cnt;
 	num = print_number(num, error_cnt);
-/*	temp = malloc(_strlen(argv) + 3);
-	for (x = 0; temp[x]; x++)
-		temp[x] = argv[x];
-	temp[x] = '\0';
-	_strcat(temp, ": ");
-	temp = _realloc(temp, _strlen(temp),
-			_strlen(temp) + _strlen(num) + 2);
-	_strcat(temp, num);
-	_strcat(temp, ": ");
-*/	if (err_num == 2 || err_num == 20)
+	if (err_num == 2 || err_num == 20)
 	{
 		temp = cat_err(num, argv, not_found, token);
 		write(STDERR_FILENO, temp, _strlen(temp));
 	}
 	else if (err_num == 122)
 	{
-		temp = cat_err(num, argv, illegal, token);
+		temp = cat_err2(num, argv, illegal, token);
 		write(STDERR_FILENO, temp, _strlen(temp));
 	}
 	else

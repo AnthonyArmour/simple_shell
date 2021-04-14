@@ -39,10 +39,12 @@ char *_strtok(char *str, int *index, char delim)
  * @argv: Arguments
  * @env: Environment
  * @alias_List: list of aliases
+ * @free_env_list: env vars to be freed
  * Return: void
  */
 
-ll *_script(int fd, char *argv, char **env, ll *alias_List)
+ll *_script(int fd, char *argv, char **env, ll *alias_List
+	    , char *free_env_list)
 {
 	int x = 0, xx = 0, buflen = 0, newlen = 0;
 	char *buf = NULL, tmp[1024];
@@ -70,7 +72,7 @@ ll *_script(int fd, char *argv, char **env, ll *alias_List)
 	if (x != 0)
 	{
 		Cmd = parser1(buf, argv);
-		alias_List = parser2(Cmd, argv, env, alias_List);
+		alias_List = parser2(Cmd, argv, env, alias_List, free_env_list);
 		for (x = 0; Cmd[x]; x++)
 			free(Cmd[x]);
 		free(Cmd);

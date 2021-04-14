@@ -40,6 +40,7 @@ size_t get_size(char *str, char delim)
 /**
  * print_number - prints a number
  * @n: number to print
+ * @str: str
  * Return: number
  */
 
@@ -50,9 +51,7 @@ char *print_number(char *str, int n)
 	unsigned int y = 1000000000;
 	int idx = 0, len = 0;
 
-/*	str = malloc(1);
-	str[0] = '\0';
-*/	while (nn >= 1)
+	while (nn >= 1)
 	{
 		if (nn >= y)
 		{
@@ -83,7 +82,6 @@ char *print_number(char *str, int n)
 
 /**
  * cat_err - concats error message
- * @temp: return string
  * @num: error number
  * @argv: argument
  * @var: special message
