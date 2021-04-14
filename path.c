@@ -40,10 +40,9 @@ char *get_path(char **env, char *token)
 
 char *add_cwd(char *str)
 {
-	int x = 0, xx = 0, idx = 0, sig = 0;
+	int idx = 0, sig = 0;
 	size_t n = 20;
-	char *buf = NULL;
-	char *temp = NULL;
+	char *buf = NULL, *temp = NULL;
 
 	buf = malloc(n);
 	buf = getcwd(buf, n);
@@ -56,11 +55,8 @@ char *add_cwd(char *str)
 	temp = malloc(_strlen(str) + _strlen(buf) + 1);
 	if (str[0] == ':')
 	{
-		for (x = 0; buf[x]; x++)
-			temp[xx] = buf[x], xx++;
-		for (x = 0; str[x]; x++)
-			temp[xx] = str[x], xx++;
-		temp[xx] = '\0';
+		_strcat(temp, buf);
+		_strcat(temp, str);
 		sig = 1;
 	}
 	else
@@ -71,26 +67,14 @@ char *add_cwd(char *str)
 			{
 				sig = 1;
 				break;
-			}
-	        }
+			} }
 		if (sig != 0)
-		{
-			for (x = 0; x <= idx; x++)
-				temp[xx] = str[x], xx++;
-			for (x = 0; buf[x]; x++)
-				temp[xx] = buf[x], xx++;
-			for (idx = idx + 1; str[idx]; idx++)
-				temp[xx] = str[idx], xx++;
-			temp[xx] = '\0';
-		}
+			temp = hit_sig(temp, idx, buf, str);
 	}
 	if (str[_strlen(str) - 1] == ':')
         {
-                for (x = 0; str[x]; x++)
-                        temp[xx] = str[x], xx++;
-                for (x = 0; buf[x]; x++)
-                        temp[xx] = buf[x];
-                temp[xx] = '\0';
+		_strcat(temp, str);
+		_strcat(temp, buf);
 		sig = 1;
         }
 	else if (sig == 0)
@@ -99,10 +83,24 @@ char *add_cwd(char *str)
 		free(buf);
 		return (str);
 	}
-/*	free(str);
- */	free(buf);
+	free(buf);
 	return (temp);
 }
+
+char *hit_sig(char *temp, int idx, char *buf, char *str)
+{
+	int xx = _strlen(buf), x = 0;
+
+	for (x = 0; x <= idx; x++)
+		temp[xx] = str[x], xx++;
+	for (x = 0; buf[x]; x++)
+		temp[xx] = buf[x], xx++;
+	for (idx = idx + 1; str[idx]; idx++)
+		temp[xx] = str[idx], xx++;
+	temp[xx] = '\0';
+	return (temp);
+}
+
 
 /**
  * path_check - finds directory paths
