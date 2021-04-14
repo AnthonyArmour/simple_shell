@@ -1,22 +1,30 @@
-void free_pwd(char **env)
+#include "shell.h"
+void free_env(char **env, char *free_env_list)
 {
-        int idx = 0;
+        int idx = 0, x = 0, sig = 0;
 
-	while (env[idx])
-        {
-                if (strncmp(env[idx], "OLDPWD=", 7) == 0)
-                        break;
-                idx++;
-        }
-        free(env[idx]);
-	idx = 0;
-	while (env[idx])
-        {
-                if(strncmp(env[idx], "PWD=", 4) == 0)
-                        break;
-                idx++;
-        }
-	free(env[idx]);
+	if (!free_env_list)
+		return;
+	while (free_env_list[x])
+	{
+		while(env[idx])
+		{
+			if (strncmp((free_env_list + x), env[idx],
+				    xstrlen(free_env_list + x)) == 0)
+			{
+				free(env[idx]);
+				idx = 0;
+				x += xstrlen(free_env_list + x);
+				sig = 1;
+				break;
+			}
+			idx++;
+		}
+		if (sig == 0)
+			idx = 0, x++;
+		sig = 0;
+	}
+	free(free_env_list);
 }
 
 /**
@@ -27,59 +35,45 @@ void free_pwd(char **env)
  * Return: int
  */
 
-int my_exit(char **tokes, char *argv, char **env)
+char *my_exit(char **cmd_list, ll *alias_list,
+	      char *free_env_list, char **tokes, char *argv, char **env)
 {
+	(void)free_env_list;
+	(void)cmd_list;
+	(void)alias_list;
 	(void)argv;
 	(void)env;
 	if (tokes[1] == NULL)
-		exit(0);
+	{
+		free_env(env, free_env_list);
+		free_rm(cmd_list, alias_list);
+ 		exit(0);
+	}
 	else
-		exit(atoi(tokes[1]));
-	return (0);
+	{
+		free_env(env, free_env_list);
+		free_rm(cmd_list, alias_list);
+ 		exit(atoi(tokes[1]));
+	}
+	return (free_env_list);
+}
+
+void free_rm(char **cmd, ll *alias_list)
+{
+	int x = 0;
+
+	for (x = 0; cmd[x]; x++)
+                free(cmd[x]);
+        free(cmd);
+	free_list(alias_list);
 }
 
 
-
-void handle_err(char *argv, int err_num, char *token)
+int xstrlen(char *s)
 {
-	char *temp = NULL;
-	char *num;
-	int error_cnt, x = 0, idx = 0;
-	char *not_found = "not found\n";
+	int x = 0;
 
-	err_num = errno;
-	error_cnt = err_Cnt;
-	num = print_number(error_cnt);
-	temp = malloc(_strlen(argv) + 3);
-	for (idx = 0; argv[idx]; idx++)
-		temp[idx] = argv[idx];
-	temp[idx] = ':', idx++;
-	temp[idx] = ' ', idx++;
-	temp = _realloc(temp, _strlen(temp),
-			_strlen(temp) + _strlen(num) + 2);
-	for (x = 0; num[x]; x++)
-	temp[idx] = num[x], idx++;
-	temp[idx] = ':', idx++;
-	temp[idx] = ' ', idx++;
-	if (err_num == 2 || err_num == 20)
-	{
-		temp = _realloc(temp, _strlen(temp),
-				_strlen(temp) + _strlen(token) + 2);
-		for (x = 0; token[x]; x++)
-				temp[idx] = token[x], idx++;
-		temp[idx] = ':', idx++;
-		temp[idx] = ' ', idx++;
-		temp = _realloc(temp, _strlen(temp),
-				_strlen(temp) + _strlen(not_found) + 1);
-		for (x = 0; not_found[x]; x++)
-			temp[idx] = not_found[x], idx++;
-		temp[idx] = '\0';
-		write(STDERR_FILENO, temp, _strlen(temp));
-	}
-	else
-	{
-		write(STDERR_FILENO, temp, _strlen(temp));
-		perror(token);
-	}
-	free(temp);
+	for (x = 0; s[x] != ' '; x++)
+		;
+	return (x);
 }

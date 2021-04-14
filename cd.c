@@ -1,4 +1,7 @@
-int _cd(char **tokes, char *argv, char **env)
+#include "shell.h"
+extern int errno;
+char *_cd(char **cmd_list, ll *alias_list,
+	  char *free_env_list, char **tokes, char *argv, char **env)
 {
 	int err_num, x = 0;
 	size_t n = 15;
@@ -6,6 +9,8 @@ int _cd(char **tokes, char *argv, char **env)
 	char *temp = NULL, *old_pwd = NULL;
 	char *pwd = "PWD=", *path = NULL;
 
+	(void)cmd_list;
+	(void)alias_list;
 	(void)env;
 	temp = malloc(5);
 	for (x = 0; pwd[x]; x++)
@@ -43,9 +48,11 @@ int _cd(char **tokes, char *argv, char **env)
 		free(buf);
 		old_pwd = set_pwd(temp, env);
 		set_old_pwd(old_pwd, env);
+		free_env_list = add_to_free_env(free_env_list, "OLDPWD");
+		free_env_list =add_to_free_env(free_env_list, "PWD");
 	}
 	free(path);
-	return (0);
+	return (free_env_list);
 }
 char *get_home(char *home, char **env)
 {

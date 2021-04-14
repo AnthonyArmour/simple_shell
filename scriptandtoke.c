@@ -13,7 +13,7 @@ extern int errno;
 char *_strtok(char *str, int *index, char delim)
 {
 	int x = 0, y = 0;
-	char *tok;
+	char *tok = NULL;
 
 	if (!str)
 		return (NULL);
