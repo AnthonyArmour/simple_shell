@@ -12,17 +12,23 @@
 #include <errno.h>
 #include <signal.h>
 /* STRUCTS */
+typedef struct linked_list
+{
+        char *str;
+        struct linked_list *next;
+} ll;
 typedef struct built_in
 {
 	char *var;
-	int (*f)(char **tokes, char *argv, char **env);
+	char * (*f)(char **cmd_list, ll *alias_list, char *free_env_list, char **tokes, char *argv, char **env);
 } b_in;
-typedef struct linked_list
+/*typedef struct linked_list
 {
 	char *str;
 	struct linked_list *next;
-} ll;
+	} ll;*/
 /* Prototypes */
+void free_list(ll *head);
 char *_strtok(char *str, int *index, char delim);
 int _putchar(char c);
 char *_strcpy(char *dest, char *src);
@@ -39,17 +45,22 @@ char *_strcat(char *dest, char *src);
 void print_Prompt1(void);
 char *str_number(char *buf, unsigned int n);
 void print_Prompt2(void);
-int builtin(char **tokes, char *argv, char **env);
-int my_exit(char **tokes, char *argv, char **env);
+char *builtin(char **cmd_list, ll *alias_list,
+	      char *free_env_list, char **tokes, char *argv, char **env, int *ret);
+char *my_exit(char **cmd_list, ll *alias_list,
+	      char *free_env_list, char **tokes, char *argv, char **env);
 char *get_path(char **env, char *token);
 int path_check(char **paths);
 char **append_paths(char *token, char **paths);
 char *str_mul_cat(char *dest, char *str2, char *str1);
 int path_idx(char **env);
 size_t get_size(char *str, char delim);
-int _setenv(char **tokes, char *argv, char **env);
-int b_env(char **tokes, char *argv, char **env);
-int _unsetenv(char **tokes, char *argv, char **env);
+char *_setenv(char **cmd_list, ll *alias_list,
+	      char *free_env_list, char **tokes, char *argv, char **env);
+char *b_env(char **cmd_list, ll *alias_list,
+	    char *free_env_list, char **tokes, char *argv, char **env);
+char *_unsetenv(char **cmd_list, ll *alias_list,
+		char *free_env_list, char **tokes, char *argv, char **env);
 ll *_script(int fd, char *argv, char **env, ll *alias_List);
 ll *add_Alias(char *token, char *argv, ll *alias_List);
 ll *alias_Options(char *argv, char *cmd, ll *alias_List);
@@ -65,12 +76,17 @@ char *rep_Alias(ll *alias_List, char *argv, char **tokes, int *idx, int *len);
 char *print_number(int n);
 void handle_err(char *argv, int err_num, char *token);
 char *add_cwd(char *str);
-int _cd(char **tokes, char *argv, char **env);
+char *_cd(char **cmd_list, ll *alias_list,
+	  char *free_env_list, char **tokes, char *argv, char **env);
 char *set_pwd(char *str, char **env);
 void set_old_pwd(char *str, char **env);
 char *get_old_dir(char *old, char **env);
 char *get_home(char *home, char **env);
-void free_pwd(char **env);
+void free_env(char **env, char *free_env_list);
+char *add_to_free_env(char *free_env_list, char *token);
+char *remove_free_list_node(char *free_env_list, char *token);
+int xstrlen(char *s);
+void free_rm(char **cmd, ll *alias_list);
 /*size_t list_len(const list_t *h);
 void free_list(list_t *head);
 list_t *add_node(list_t **head, const char *str);
