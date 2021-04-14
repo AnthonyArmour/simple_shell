@@ -24,7 +24,7 @@ int main(int argc, char *argv[], char *env[])
 	{
 		if (mode)
 			print_Prompt1();
-		command = read_Cmd();
+		command = read_Cmd(mode);
 		if (!command)
 		{
 			if (mode)
@@ -53,10 +53,11 @@ int main(int argc, char *argv[], char *env[])
 
 /**
  * read_Cmd - reads command into string
+ * @mode: mode
  * Return: string
  */
 
-char *read_Cmd(void)
+char *read_Cmd(int mode)
 {
 	size_t bufsize = 1024;
 	ssize_t cmd_Check = 1;
@@ -67,9 +68,9 @@ char *read_Cmd(void)
 	{buf = comment_check(buf);
 		if (!buf)
 		{
-			print_Prompt1();
-			continue;
-		}
+			if (mode)
+				print_Prompt1();
+			continue; }
 		buf_len = _strlen(buf);
 		if (!cmd_Str)
 			cmd_Str = malloc(buf_len + 1);
@@ -79,26 +80,20 @@ char *read_Cmd(void)
 			if (cmd_temp)
 				cmd_Str = cmd_temp;
 			else
-				free(cmd_Str), cmd_Str = NULL;
-		}
+				free(cmd_Str), cmd_Str = NULL; }
 		_strcpy(cmd_Str + ptr_len, buf);
 		if (buf[buf_len - 1] == '\n')
-		{
-			free(buf);
+		{free(buf);
 			for (x = _strlen(cmd_Str) - 1; x >= 0; x--)
 			{
 				if (cmd_Str[x] == ' ' || cmd_Str[x] == '\n')
 					cmd_Str[x] = '\0';
 				else
-					break;
-			}
-			return (cmd_Str);
-		}
+					break; }
+			return (cmd_Str); }
 		ptr_len += buf_len; }
 	if (cmd_Check == -1)
-	{
-/*		write(STDOUT_FILENO, "\n", 1);*/
-		free(buf);
+	{free(buf);
 		exit(0); }
 	free(buf);
 	return (cmd_Str);
