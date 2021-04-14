@@ -7,7 +7,7 @@
 
 void print_Prompt1(void)
 {
-	char *buf = "SS$ ";
+	char *buf = "$ ";
 	int Wcheck;
 	char *err = "ERROR: Could not write prompt";
 
