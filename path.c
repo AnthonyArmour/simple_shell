@@ -43,7 +43,6 @@ char *get_path(char **env, char *token)
 	}
 	else
 	{
-		printf("RETURN NULL\n");
 		free_2d(paths);
 		return (NULL);
 	}
