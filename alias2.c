@@ -103,8 +103,7 @@ char *reset_Cmd(char *alias_Cmd, char *argv, char *cmd_Str, int idx, int len)
 char *rep_Alias(ll *alias_List, char *argv, char **tokes, int *idx, int *len)
 {
 	char *cmd_Str = NULL;
-/*	int x = 0;
- */
+
 	(void)argv;
 	for ((*idx) = 0; tokes[(*idx)]; (*idx)++)
 	{
@@ -135,11 +134,6 @@ char *rep_Alias(ll *alias_List, char *argv, char **tokes, int *idx, int *len)
 		cmd_Str += ((*len) + 2);
 		cmd_Str[_strlen(cmd_Str) - 1] = '\0';
 	}
-/*	for (x = 0; tokes[x]; x++)
-		free(tokes[x]);
-	free(tokes);
-
-*/
 	return (cmd_Str);
 }
 

@@ -112,6 +112,7 @@ char *_realloc(char *ptr, unsigned int old_size, unsigned int new_size)
 int _strcmp(char *s1, char *s2)
 {
 	int x = 0;
+
 	for (; s1[x] != '\0'; x++)
 	{
 		if (s1[x] != s2[x])

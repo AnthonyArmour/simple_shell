@@ -37,6 +37,12 @@ size_t get_size(char *str, char delim)
 	return (count);
 }
 
+/**
+ * print_number - prints a number
+ * @n: number to print
+ * Return: number
+ */
+
 char *print_number(int n)
 {
 	unsigned int x;

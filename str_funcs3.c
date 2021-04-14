@@ -1,41 +1,4 @@
 #include "shell.h"
-/*int _atoi(char *s)
-{
-	char num_str[12], new_numstr[12];
-	int x = 0, neg_count = 0, y = 0;
-
-	for (; s[x]; x++)
-	{
-		if (s[x] >= '0' && s[x] <= '9')
-			break;
-		if (s[x] == '-')
-			neg_count++;
-	}
-	x = 0;
-	for (; s[x]; x++)
-	{
-		if (s[x] >= '0' && s[x] <= '9')
-		{
-			num_str[y] = s[x];
-			y++;
-			if (s[x + 1] < '0' && s[x + 1] > '9')
-				break;
-		}
-	}
-	x = 0;
-	for (; num_str[y]; y++)
-		new_numstr[x] = num_str[y];
-	x = 0;
-	for (; new_numstr[x]; x++)
-	{
-		a = (new_numstr[x]) - 48;
-		answer = answer + (a * j);
-		j = j * 10;
-	}
-	if (neg_count % 2 != 0)
-		answer = answer * -1;		
-	return (&new_numstr);
-}*/
 
 /**
  * _strncpy - Copies n amount of bytes from src to dest
@@ -114,7 +77,7 @@ int myAtoi(char *s)
 			res = res * 10  + s[i] - '0';
 		else
 			return (-1);
-	}	
+	}
 	answer = (sign * res);
 	if (answer > INT_MAX && answer < INT_MIN)
 		return (-1);
