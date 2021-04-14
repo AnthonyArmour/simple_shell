@@ -12,21 +12,11 @@ static char *free_env_list = NULL;
 int main(int argc, char *argv[], char *env[])
 {
 	char *command = NULL;
-	int ttrue = 1, cmd_Count = 0, mode, x = 0, fd;
+	int ttrue = 1, cmd_Count = 0, mode;
 	char **Cmd = NULL;
 	ll *alias_List = NULL;
 
-	(void)argv;
-	if (argc == 2)
-	{
-		fd = open(argv[1], O_RDONLY);
-		if (fd == -1)
-			exit(22);
-		alias_List = _script(fd, argv[0], env, alias_List);
-		free_env(env, free_env_list);
-                free_rm(Cmd, alias_List);
-		return (0);
-	}
+	script_check(argc, argv, env, alias_List, free_env_list, Cmd);
         mode = isatty(STDIN_FILENO);
 	signal(SIGINT, SIG_IGN);
 	while (ttrue)
@@ -37,29 +27,21 @@ int main(int argc, char *argv[], char *env[])
 		if (!command)
 		{
 			if (mode)
-			{
-				free(command);
-				continue;
-			}
+			{free(command);
+				continue; }
 			else
-			{
-				free(command);
-				exit(0);
-			}
+			{free(command);
+				exit(0); }
 		}
 		cmd_Count = _strlen(command);
 		if (command[0] == '\0' || command[0] == '\n')
-		{
-			free(command);
-			continue;
-		}
+		{free(command);
+			continue; }
 		if (cmd_Count != 0)
 		{
 			Cmd = parser1(command, argv[0]);
 			alias_List = parser2(Cmd, argv[0], env, alias_List);
-			for (x = 0; Cmd[x]; x++)
-				free(Cmd[x]);
-			free(Cmd);
+			free_2d(Cmd);
 		}
 		free(command);
 		err_Cnt++;
@@ -67,6 +49,47 @@ int main(int argc, char *argv[], char *env[])
 	free_env(env, free_env_list);
 	free_rm(Cmd, alias_List);
 	return (0);
+}
+
+/**
+ * free_2d - frees 2d array
+ * @arr: 2d array
+ * Return: void
+ */
+
+void free_2d(char **arr)
+{
+	int x = 0;
+
+	for (x = 0; arr[x]; x++)
+		free(arr[x]);
+	free(arr);
+}
+
+/**
+ * script_check - checks if input is a script
+ * @argc: argc
+ * @argv: argv
+ * @env: env
+ * @alias_List: list of aliases
+ * @free_env_list: list of env variables to be freed
+ * Return: void
+ */
+
+void script_check(int argc, char *argv[], char **env, ll *alias_List, char *free_env_list, char **Cmd)
+{
+	int fd;
+
+	if (argc == 2)
+	{
+		fd = open(argv[1], O_RDONLY);
+		if (fd == -1)
+			exit(22);
+		alias_List = _script(fd, argv[0], env, alias_List);
+		free_env(env, free_env_list);
+		free_rm(Cmd, alias_List);
+		exit(0);
+	}
 }
 
 /**
@@ -79,39 +102,14 @@ char *read_Cmd(char *argv)
 {
 	size_t bufsize = 1024;
 	ssize_t cmd_Check = 1;
-	char *cmd_Str = NULL, *buf = NULL;
-	char *cmd_temp = NULL;
-	int ptr_len = 0, cmd_index = 0, buf_len = 0, x = 0, y;
+	char *cmd_Str = NULL, *buf = NULL, *cmd_temp = NULL;
+	int ptr_len = 0, cmd_index = 0, buf_len = 0, x = 0;
 
 	(void)argv;
 	while((cmd_Check = getline(&buf, &bufsize, stdin)) != -1)
-	{
-		while (buf[0] == ' ')
-		{
-			buf++;
-			if (buf[0] == '\n')
-				break;
-		}
-		if (buf[0] == '\n' && buf[1] == '\0')
-		{
+	{buf = comment_check(buf);
+		if (!buf)
 			return (cmd_Str);
-		}
-       		for (x = 0; buf[x] != '\0'; x++)
-		{
-			if (buf[x + 1] == '#')
-			{
-				buf[x] = '\n';
-				buf[x + 1] = '\0';
-				y = x;
-				while (buf[y - 1] == ' '|| buf[y - 1] == '\\')
-				{
-					y--;
-					if (buf[y] == '\\')
-						buf[y] = ' ';
-				}
-				break;
-			}
-		}
 		buf_len = _strlen(buf);
 		if (!cmd_Str)
 			cmd_Str = malloc(buf_len + 1);
@@ -136,17 +134,46 @@ char *read_Cmd(char *argv)
 			}
 			return (cmd_Str);
 		}
-		ptr_len += buf_len;
-	}
+		ptr_len += buf_len; }
 	if (cmd_Check == -1)
-	{
-		write(STDOUT_FILENO, "\n", 1);
-		exit(0);
-	}
+	{write(STDOUT_FILENO, "\n", 1);
+		exit(0); }
 	free(buf);
 	return (cmd_Str);
 }
+char *comment_check(char *buf)
+{
+	int x = 0, y = 0;
 
+	while (buf[0] == ' ')
+	{
+		buf++;
+		if (buf[0] == '\n')
+			break;
+	}
+	if (buf[0] == '\n' && buf[1] == '\0')
+	{
+		free(buf);
+		return (NULL);
+	}
+	for (x = 0; buf[x] != '\0'; x++)
+	{
+		if (buf[x + 1] == '#')
+		{
+			buf[x] = '\n';
+			buf[x + 1] = '\0';
+			y = x;
+			while (buf[y - 1] == ' '|| buf[y - 1] == '\\')
+			{
+				y--;
+				if (buf[y] == '\\')
+					buf[y] = ' ';
+			}
+			break;
+		}
+	}
+	return (buf);
+}
 
 /**
  * parser1 - tokenizes multiple cmds into strings
@@ -244,10 +271,6 @@ ll *parser2(char **cmd_List, char *argv, char **env, ll *alias_List)
 		free(tokes);
 		chars = 0, words = 0, tok_idx = 0;
 	}
-/*	for (x = 0; cmd_List[x]; x++)
-		free(cmd_List[x]);
-	free(cmd_List);
-*/
 return (alias_List);
 }
 
@@ -282,54 +305,49 @@ void exec_Cmd(char **tokes, char *argv, char **env)
 		}
 	}
 }
+
+char *cat_err(char *temp, char *num, char *argv, char *var, char *token)
+{
+	temp = malloc(_strlen(argv) + 3);
+        _strcat(temp, argv);
+        _strcat(temp, ": ");
+        temp = _realloc(temp, _strlen(temp),
+                        _strlen(temp) + _strlen(num) + 2);
+        _strcat(temp, num);
+        _strcat(temp, ": ");
+	temp = _realloc(temp, _strlen(temp),
+			_strlen(temp) + _strlen(token) + 2);
+	_strcat(temp, token);
+	_strcat(temp, ": ");
+	temp = _realloc(temp, _strlen(temp),
+			_strlen(temp) + _strlen(var) + 1);
+	_strcat(temp, var);
+	return (temp);
+}
 void handle_err(char *argv, int err_num, char *token)
 {
 	char *temp = NULL;
 	char *num;
-	int x = 0, error_cnt = 0, idx = 0;
+	int error_cnt = 0;
 	char *not_found = "not found\n", *illegal = "Illegal number\n";
 
 	error_cnt = err_Cnt;
 	num = print_number(error_cnt);
 	temp = malloc(_strlen(argv) + 3);
-	for (idx = 0; argv[idx]; idx++)
-		temp[idx] = argv[idx];
-	temp[idx] = ':', idx++;
-	temp[idx] = ' ', idx++;
+	_strcat(temp, argv);
+	_strcat(temp, ": ");
 	temp = _realloc(temp, _strlen(temp),
 			_strlen(temp) + _strlen(num) + 2);
-	for (x = 0; num[x]; x++)
-	temp[idx] = num[x], idx++;
-	temp[idx] = ':', idx++;
-	temp[idx] = ' ', idx++;
+	_strcat(temp, num);
+	_strcat(temp, ": ");
 	if (err_num == 2 || err_num == 20)
 	{
-		temp = _realloc(temp, _strlen(temp),
-				_strlen(temp) + _strlen(token) + 2);
-		for (x = 0; token[x]; x++)
-				temp[idx] = token[x], idx++;
-		temp[idx] = ':', idx++;
-		temp[idx] = ' ', idx++;
-		temp = _realloc(temp, _strlen(temp),
-				_strlen(temp) + _strlen(not_found) + 1);
-		for (x = 0; not_found[x]; x++)
-			temp[idx] = not_found[x], idx++;
-		temp[idx] = '\0';
+		temp = cat_err(temp, num, argv, not_found, token);
 		write(STDERR_FILENO, temp, _strlen(temp));
 	}
 	else if (err_num == 122)
 	{
-		temp = _realloc(temp, _strlen(temp),
-				_strlen(temp) + _strlen(token) + 2);
-		for (x = 0; token[x]; x++)
-				temp[idx] = token[x], idx++;
-		temp[idx] = ':', idx++;
-		temp[idx] = ' ', idx++;
-		temp = _realloc(temp, _strlen(temp),
-				_strlen(temp) + _strlen(illegal) + 1);
-		for (x = 0; illegal[x]; x++)
-			temp[idx] = illegal[x], idx++;
-		temp[idx] = '\0';
+		temp = cat_err(temp, num, argv, illegal, token);
 		write(STDERR_FILENO, temp, _strlen(temp));
 	}
 	else

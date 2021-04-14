@@ -3,19 +3,15 @@ extern int errno;
 char *_cd(char **cmd_list, ll *alias_list,
 	  char *free_env_list, char **tokes, char *argv, char **env)
 {
-	int err_num, x = 0;
+	int err_num;
 	size_t n = 15;
 	char *buf = NULL;
-	char *temp = NULL, *old_pwd = NULL;
-	char *pwd = "PWD=", *path = NULL;
+	char *temp = NULL, *old_pwd = NULL, *pwd = "PWD=", *path = NULL;
 
 	(void)cmd_list;
 	(void)alias_list;
-	(void)env;
 	temp = malloc(5);
-	for (x = 0; pwd[x]; x++)
-		temp[x] = pwd[x];
-	temp[x] = '\0';
+	_strcat(temp, pwd);
 	if (!tokes[1])
 		path = get_home(path, env);
 	else if (_strcmp(tokes[1], "-") == 0)
@@ -23,9 +19,7 @@ char *_cd(char **cmd_list, ll *alias_list,
 	else
 	{
 		path = malloc(_strlen(tokes[1]) + 1);
-		for (x = 0; tokes[1][x]; x++)
-			path[x] = tokes[1][x];
-		path[x] = '\0';
+		_strcat(path, tokes[1]);
 	}
 	if (chdir(path) < 0)
 	{
@@ -35,14 +29,7 @@ char *_cd(char **cmd_list, ll *alias_list,
 	}
 	else
 	{
-		buf = malloc(n);
-		buf = getcwd(buf, n);
-		while (!buf)
-		{
-			n = n * 2;
-			buf = _realloc(buf, (n / 2), n);
-			buf = getcwd(buf, n);
-		}
+		buf = findcwd(buf, n);
 		temp = _realloc(temp, 5, _strlen(buf) + 5);
 			temp = _strcat(temp, buf);
 		free(buf);
@@ -53,6 +40,18 @@ char *_cd(char **cmd_list, ll *alias_list,
 	}
 	free(path);
 	return (free_env_list);
+}
+char *findcwd(char *buf, size_t n)
+{
+	buf = malloc(n);
+	buf = getcwd(buf, n);
+	while (!buf)
+	{
+		n = n * 2;
+		buf = _realloc(buf, (n / 2), n);
+		buf = getcwd(buf, n);
+	}
+	return (buf);
 }
 char *get_home(char *home, char **env)
 {
