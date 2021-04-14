@@ -44,11 +44,12 @@ char *_strcpy(char *dest, char *src);
 int _strlen(char *s);
 char *_strdup(char *str);
 void dim2(char *str, int *chars, int *words, char *argv);
-ll *parser2(char **cmd_List, char *argv, char **env, ll *alias_List);
+ll *parser2(char **cmd_List, char *argv, char **env, ll *alias_List
+	    , char *free_env_list);
 char **parser1(char *cmd_Str, char *argv);
 void StrDimensions(char *cmd_Str, char *argv,
 	 int *cmd_Str_Len, int *cmd_Count);
-char *read_Cmd(char *argv);
+char *read_Cmd(void);
 void exec_Cmd(char **tokes, char *argv, char **env);
 char *_realloc(char *ptr, unsigned int old_size, unsigned int new_size);
 void print_Prompt1(void);
@@ -70,7 +71,7 @@ char *b_env(char **cmd_list, ll *alias_list,
 	    char *free_env_list, char **tokes, char *argv, char **env);
 char *_unsetenv(char **cmd_list, ll *alias_list,
 		char *free_env_list, char **tokes, char *argv, char **env);
-ll *_script(int fd, char *argv, char **env, ll *alias_List);
+ll *_script(int fd, char *argv, char **env, ll *alias_List, char *free_env_list);
 ll *add_Alias(char *token, char *argv, ll *alias_List);
 ll *alias_Options(char *argv, char *cmd, ll *alias_List);
 void print_Alias(char *token, char *argv, ll *alias_List);
@@ -108,4 +109,5 @@ char *comment_check(char *buf);
 char *cat_err(char *num, char *argv, char *var, char *token);
 char *findcwd(char *buf, size_t n);
 char *cwd_cat(char *temp, int idx, char *buf, char *str);
+char *cat_err2(char *num, char *argv, char *var, char *token);
 #endif

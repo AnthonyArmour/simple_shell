@@ -9,13 +9,14 @@
 
 void free_env(char **env, char *free_env_list)
 {
-	int idx = 0, x = 0, sig = 0;
+	int idx = 0, x = 0, sig = 0, t = 0;
 
 	if (!free_env_list)
 		return;
+	printf("LIST IS: %s\n\n\n", free_env_list);
 	while (free_env_list[x])
 	{
-		while (env[idx])
+		while (t < 12)
 		{
 			if (_strncmp((free_env_list + x), env[idx],
 				xstrlen(free_env_list + x)) == 0)
@@ -27,6 +28,7 @@ void free_env(char **env, char *free_env_list)
 				break;
 			}
 			idx++;
+			t++;
 		}
 		if (sig == 0)
 			idx = 0, x++;
@@ -64,7 +66,6 @@ char *my_exit(char **cmd_list, ll *alias_list,
 		num = myAtoi(tokes[1]);
 		if (num < 0 || _strlen(tokes[1]) > 10)
 		{
-			free_2d(tokes);
 			err_num = 122;
 			handle_err(argv, err_num, tokes[1]);
 		}
