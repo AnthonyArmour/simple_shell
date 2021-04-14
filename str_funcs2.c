@@ -43,28 +43,31 @@ size_t get_size(char *str, char delim)
  * Return: number
  */
 
-char *print_number(int n)
+char *print_number(char *str, int n)
 {
 	unsigned int x;
 	unsigned int nn = n;
 	unsigned int y = 1000000000;
-	int idx = 0;
-	char *str = NULL;
+	int idx = 0, len = 0;
 
-	str = malloc(1);
+/*	str = malloc(1);
 	str[0] = '\0';
-	while (nn >= 1)
+*/	while (nn >= 1)
 	{
 		if (nn >= y)
 		{
+			if (str)
+				len = _strlen(str);
 			x = nn / y;
-			str = _realloc(str, _strlen(str), _strlen(str) + 1);
+			str = _realloc(str, len, len + 2);
 			str[idx] = ('0' + x), idx++;
 			nn = nn - (x * y);
 			y = y / 10;
 			while (nn < y)
 			{
-				str = _realloc(str, _strlen(str), _strlen(str) + 1);
+				if (str)
+					len = _strlen(str);
+				str = _realloc(str, len, len + 1);
 				str[idx] = ('0' + x), idx++;
 				y = y / 10;
 			}
@@ -74,7 +77,7 @@ char *print_number(int n)
 			y = y / 10;
 		}
 	}
-	str[idx + 1] = '\0';
+	str[idx] = '\0';
 	return (str);
 }
 
@@ -88,20 +91,28 @@ char *print_number(int n)
  * Return: temp
  */
 
-char *cat_err(char *temp, char *num, char *argv, char *var, char *token)
+char *cat_err(char *num, char *argv, char *var, char *token)
 {
+	int x = 0;
+	char *temp = NULL, *col_space = ": ";
+
 	temp = malloc(_strlen(argv) + 3);
-	_strcat(temp, argv);
-	_strcat(temp, ": ");
-	temp = _realloc(temp, _strlen(temp),
-		_strlen(temp) + _strlen(num) + 2);
+	for (x = 0; argv[x]; x++)
+		temp[x] = argv[x];
+	temp[x] = '\0';
+	_strcat(temp, col_space);
+
+	temp = _realloc(temp, _strlen(temp) + 1,
+			_strlen(temp) + _strlen(num) + 3);
 	_strcat(temp, num);
-	_strcat(temp, ": ");
-	temp = _realloc(temp, _strlen(temp),
-			_strlen(temp) + _strlen(token) + 2);
+	_strcat(temp, col_space);
+
+	temp = _realloc(temp, _strlen(temp) + 1,
+			_strlen(temp) + _strlen(token) + 3);
 	_strcat(temp, token);
-	_strcat(temp, ": ");
-	temp = _realloc(temp, _strlen(temp),
+	_strcat(temp, col_space);
+
+	temp = _realloc(temp, _strlen(temp) + 1,
 			_strlen(temp) + _strlen(var) + 1);
 	_strcat(temp, var);
 	return (temp);

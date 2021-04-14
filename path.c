@@ -10,12 +10,14 @@
 char *get_path(char **env, char *token)
 {
 	int ex = 0, num_of_paths = 0, tok_idx = 0, x = 0, final_path_idx = 0;
-	char *strp = NULL;
+	char *strp = NULL, *tmp = NULL;
 	char **paths = NULL;
+	struct stat stats;
 
+	if (stat(token, &stats) == 0)
+		return (token);
 	ex = path_idx(env);
-	strp = _strdup(env[ex]);
-	strp += 5;
+	strp = _strdup((env[ex] + 5));
 	num_of_paths = get_size(strp, ':');
 	strp = add_cwd(strp);
 	paths = malloc(sizeof(char *) * (num_of_paths + 1));
@@ -29,11 +31,22 @@ char *get_path(char **env, char *token)
 		tok_idx++;
 	}
 	paths[x] = NULL;
+	free(strp);
 	paths = append_paths(token, paths);
 	final_path_idx = path_check(paths);
 	if (final_path_idx >= 0)
-		return (paths[final_path_idx]);
-	return (NULL);
+	{
+		free(token);
+		tmp = _strdup(paths[final_path_idx]);
+		free_2d(paths);
+		return (tmp);
+	}
+	else
+	{
+		printf("RETURN NULL\n");
+		free_2d(paths);
+		return (NULL);
+	}
 }
 
 /**
@@ -69,6 +82,7 @@ char *add_cwd(char *str)
 		free(buf);
 		return (str);
 	}
+	free(str);
 	free(buf);
 	return (temp);
 }
@@ -125,15 +139,18 @@ char *cwd_cat(char *temp, int idx, char *buf, char *str)
 
 int path_check(char **paths)
 {
-	int x = -1;
+	int x = -1, sig = 0;
 	struct stat stats;
 
 	for (x = 0; paths[x]; x++)
 	{
 		if (stat(paths[x], &stats) == 0)
+		{
+			sig = 1;
 			break;
+		}
 	}
-	if (!paths[x])
+	if (sig == 0)
 		x = -1;
 	return (x);
 }

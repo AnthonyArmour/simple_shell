@@ -81,7 +81,6 @@ char *_realloc(char *ptr, unsigned int old_size, unsigned int new_size)
 
 	if (new_size == 0 && !ptr)
 	{
-		free(ptr);
 		return (NULL);
 	}
 	if (new_size == old_size)
@@ -91,6 +90,7 @@ char *_realloc(char *ptr, unsigned int old_size, unsigned int new_size)
 		ptr = malloc(new_size);
 		if (!ptr)
 			return (NULL);
+		return (ptr);
 	}
 	nptr = malloc(new_size);
 	if (!nptr)
