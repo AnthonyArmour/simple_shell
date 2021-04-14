@@ -157,7 +157,7 @@ int path_idx(char **env)
 
 	while (env[x])
 	{
-		if (strncmp(env[x], "PATH=", 5) == 0)
+		if (_strncmp(env[x], "PATH=", 5) == 0)
 			break;
 		x++;
 	}

@@ -138,6 +138,11 @@ char *read_Cmd(char *argv)
 		}
 		ptr_len += buf_len;
 	}
+	if (cmd_Check == -1)
+	{
+		write(STDOUT_FILENO, "\n", 1);
+		exit(0);
+	}
 	free(buf);
 	return (cmd_Str);
 }
@@ -211,7 +216,7 @@ ll *parser2(char **cmd_List, char *argv, char **env, ll *alias_List)
 		dim2(cmd_List[x], &chars, &words, argv);
 		tokes = malloc(sizeof(char *) * chars + words);
 		tokes[0] = _strtok(cmd_List[x], &tok_idx, ' ');
-		if (strcmp(tokes[0], "alias") == 0)
+		if (_strcmp(tokes[0], "alias") == 0)
 		{
 			alias_List = alias_Options(argv, cmd_List[x], alias_List);
 			free(tokes[0]);
@@ -282,10 +287,9 @@ void handle_err(char *argv, int err_num, char *token)
 	char *temp = NULL;
 	char *num;
 	int x = 0, error_cnt = 0, idx = 0;
-	char *not_found = "not found\n";
+	char *not_found = "not found\n", *illegal = "Illegal number\n";
 
 	error_cnt = err_Cnt;
-	err_num = errno;
 	num = print_number(error_cnt);
 	temp = malloc(_strlen(argv) + 3);
 	for (idx = 0; argv[idx]; idx++)
@@ -310,6 +314,21 @@ void handle_err(char *argv, int err_num, char *token)
 				_strlen(temp) + _strlen(not_found) + 1);
 		for (x = 0; not_found[x]; x++)
 			temp[idx] = not_found[x], idx++;
+		temp[idx] = '\0';
+		write(STDERR_FILENO, temp, _strlen(temp));
+	}
+	else if (err_num == 122)
+	{
+		temp = _realloc(temp, _strlen(temp),
+				_strlen(temp) + _strlen(token) + 2);
+		for (x = 0; token[x]; x++)
+				temp[idx] = token[x], idx++;
+		temp[idx] = ':', idx++;
+		temp[idx] = ' ', idx++;
+		temp = _realloc(temp, _strlen(temp),
+				_strlen(temp) + _strlen(illegal) + 1);
+		for (x = 0; illegal[x]; x++)
+			temp[idx] = illegal[x], idx++;
 		temp[idx] = '\0';
 		write(STDERR_FILENO, temp, _strlen(temp));
 	}

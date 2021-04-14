@@ -11,6 +11,7 @@
 #include <string.h>
 #include <errno.h>
 #include <signal.h>
+#include <limits.h>
 /* STRUCTS */
 typedef struct linked_list
 {
@@ -41,7 +42,6 @@ void StrDimensions(char *cmd_Str, char *argv, int *cmd_Str_Len, int *cmd_Count);
 char *read_Cmd(char *argv);
 void exec_Cmd(char **tokes, char *argv, char **env);
 char *_realloc(char *ptr, unsigned int old_size, unsigned int new_size);
-char *_strcat(char *dest, char *src);
 void print_Prompt1(void);
 char *str_number(char *buf, unsigned int n);
 void print_Prompt2(void);
@@ -87,6 +87,11 @@ char *add_to_free_env(char *free_env_list, char *token);
 char *remove_free_list_node(char *free_env_list, char *token);
 int xstrlen(char *s);
 void free_rm(char **cmd, ll *alias_list);
+char *_strncpy(char *dest, char *src, int n);
+int _strncmp(const char *s1, const char *s2, size_t n);
+int myAtoi(char *s);
+char *_strcat(char *str, char *str2);
+int _strcmp(char *s1, char *s2);
 /*size_t list_len(const list_t *h);
 void free_list(list_t *head);
 list_t *add_node(list_t **head, const char *str);

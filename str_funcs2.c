@@ -12,8 +12,8 @@ char *str_mul_cat(char *dest, char *str2, char *str1)
 {
 	if (dest && str2 && str1)
 	{
-		strcat(dest, str1);
-		strcat(dest, str2);
+		_strcat(dest, str1);
+		_strcat(dest, str2);
 	}
 	return (dest);
 }
