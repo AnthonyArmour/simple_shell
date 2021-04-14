@@ -36,7 +36,11 @@ char *get_path(char **env, char *token)
 	return (NULL);
 }
 
-
+/**
+ * add_cwd - adds PWD
+ * @str: passed directory
+ * Return: directory
+ */
 
 char *add_cwd(char *str)
 {
@@ -52,6 +56,36 @@ char *add_cwd(char *str)
 		buf = _realloc(buf, (n / 2), n);
 		buf = getcwd(buf, n);
 	}
+	temp = cwd_cat(temp, idx, buf, str);
+	if (str[_strlen(str) - 1] == ':')
+	{
+		_strcat(temp, str);
+		_strcat(temp, buf);
+		sig = 1;
+	}
+	else if (sig == 0)
+	{
+		free(temp);
+		free(buf);
+		return (str);
+	}
+	free(buf);
+	return (temp);
+}
+
+/**
+ * cwd_cat - deals with signal if statements
+ * @temp: base string
+ * @idx: index
+ * @buf: buffer
+ * @str: string
+ * Return: temp
+ */
+
+char *cwd_cat(char *temp, int idx, char *buf, char *str)
+{
+	int xx = _strlen(buf), x = 0, sig = 0;
+
 	temp = malloc(_strlen(str) + _strlen(buf) + 1);
 	if (str[0] == ':')
 	{
@@ -67,40 +101,21 @@ char *add_cwd(char *str)
 			{
 				sig = 1;
 				break;
-			} }
+			}
+		}
 		if (sig != 0)
-			temp = hit_sig(temp, idx, buf, str);
+		{
+			for (x = 0; x <= idx; x++)
+				temp[xx] = str[x], xx++;
+			for (x = 0; buf[x]; x++)
+				temp[xx] = buf[x], xx++;
+			for (idx = idx + 1; str[idx]; idx++)
+				temp[xx] = str[idx], xx++;
+			temp[xx] = '\0';
+		}
 	}
-	if (str[_strlen(str) - 1] == ':')
-        {
-		_strcat(temp, str);
-		_strcat(temp, buf);
-		sig = 1;
-        }
-	else if (sig == 0)
-	{
-		free(temp);
-		free(buf);
-		return (str);
-	}
-	free(buf);
 	return (temp);
 }
-
-char *hit_sig(char *temp, int idx, char *buf, char *str)
-{
-	int xx = _strlen(buf), x = 0;
-
-	for (x = 0; x <= idx; x++)
-		temp[xx] = str[x], xx++;
-	for (x = 0; buf[x]; x++)
-		temp[xx] = buf[x], xx++;
-	for (idx = idx + 1; str[idx]; idx++)
-		temp[xx] = str[idx], xx++;
-	temp[xx] = '\0';
-	return (temp);
-}
-
 
 /**
  * path_check - finds directory paths
@@ -141,23 +156,4 @@ char **append_paths(char *token, char **paths)
 		paths[x] = str_mul_cat(paths[x], token, "/");
 	}
 	return (paths);
-}
-
-/**
- * path_idx - finds path variable in environment
- * @env: environment
- * Return: path variable index
- */
-
-int path_idx(char **env)
-{
-	int x = 0;
-
-	while (env[x])
-	{
-		if (_strncmp(env[x], "PATH=", 5) == 0)
-			break;
-		x++;
-	}
-	return (x);
 }

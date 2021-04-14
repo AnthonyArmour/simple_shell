@@ -1,5 +1,4 @@
 #include "shell.h"
-extern int errno;
 
 /**
  * free_env - frees an environmental variable

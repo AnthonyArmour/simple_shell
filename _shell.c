@@ -1,4 +1,6 @@
 #include "shell.h"
+static char *free_env_list;
+static int err_Cnt;
 /**
  * main - basic shell
  * @argc: num of cmd line args
@@ -6,9 +8,6 @@
  * @env: environment data
  * Return: int
  */
-extern int errno;
-int err_Cnt = 1;
-static char *free_env_list = NULL;
 int main(int argc, char *argv[], char *env[])
 {
 	char *command = NULL;
@@ -17,7 +16,7 @@ int main(int argc, char *argv[], char *env[])
 	ll *alias_List = NULL;
 
 	script_check(argc, argv, env, alias_List, free_env_list, Cmd);
-        mode = isatty(STDIN_FILENO);
+	mode = isatty(STDIN_FILENO);
 	signal(SIGINT, SIG_IGN);
 	while (ttrue)
 	{
@@ -52,47 +51,6 @@ int main(int argc, char *argv[], char *env[])
 }
 
 /**
- * free_2d - frees 2d array
- * @arr: 2d array
- * Return: void
- */
-
-void free_2d(char **arr)
-{
-	int x = 0;
-
-	for (x = 0; arr[x]; x++)
-		free(arr[x]);
-	free(arr);
-}
-
-/**
- * script_check - checks if input is a script
- * @argc: argc
- * @argv: argv
- * @env: env
- * @alias_List: list of aliases
- * @free_env_list: list of env variables to be freed
- * Return: void
- */
-
-void script_check(int argc, char *argv[], char **env, ll *alias_List, char *free_env_list, char **Cmd)
-{
-	int fd;
-
-	if (argc == 2)
-	{
-		fd = open(argv[1], O_RDONLY);
-		if (fd == -1)
-			exit(22);
-		alias_List = _script(fd, argv[0], env, alias_List);
-		free_env(env, free_env_list);
-		free_rm(Cmd, alias_List);
-		exit(0);
-	}
-}
-
-/**
  * read_Cmd - reads command into string
  * @argv: argument
  * Return: string
@@ -106,7 +64,7 @@ char *read_Cmd(char *argv)
 	int ptr_len = 0, cmd_index = 0, buf_len = 0, x = 0;
 
 	(void)argv;
-	while((cmd_Check = getline(&buf, &bufsize, stdin)) != -1)
+	while ((cmd_Check = getline(&buf, &bufsize, stdin)) != -1)
 	{buf = comment_check(buf);
 		if (!buf)
 			return (cmd_Str);
@@ -116,7 +74,7 @@ char *read_Cmd(char *argv)
 		else
 		{
 			cmd_temp = _realloc(cmd_Str, cmd_index, ptr_len);
-		        if (cmd_temp)
+			if (cmd_temp)
 				cmd_Str = cmd_temp;
 			else
 				free(cmd_Str), cmd_Str = NULL;
@@ -140,39 +98,6 @@ char *read_Cmd(char *argv)
 		exit(0); }
 	free(buf);
 	return (cmd_Str);
-}
-char *comment_check(char *buf)
-{
-	int x = 0, y = 0;
-
-	while (buf[0] == ' ')
-	{
-		buf++;
-		if (buf[0] == '\n')
-			break;
-	}
-	if (buf[0] == '\n' && buf[1] == '\0')
-	{
-		free(buf);
-		return (NULL);
-	}
-	for (x = 0; buf[x] != '\0'; x++)
-	{
-		if (buf[x + 1] == '#')
-		{
-			buf[x] = '\n';
-			buf[x + 1] = '\0';
-			y = x;
-			while (buf[y - 1] == ' '|| buf[y - 1] == '\\')
-			{
-				y--;
-				if (buf[y] == '\\')
-					buf[y] = ' ';
-			}
-			break;
-		}
-	}
-	return (buf);
 }
 
 /**
@@ -275,55 +200,13 @@ return (alias_List);
 }
 
 /**
- * exec_Cmd - execute function
- * @tokes: 2d array of tokens
- * @argv: argv[0]
- * @env: environment
- * Return: void
+ * handle_err - Handles errors
+ * @argv: Argument
+ * @err_num: Counting error numbers
+ * @token: token
+ * Return: Void
  */
 
-void exec_Cmd(char **tokes, char *argv, char **env)
-{
-
-	pid_t pid = fork();
-	int err_num;
-
-	(void)env;
-	if (pid != 0)
-	{
-		while (wait(NULL) != -1)
-			;
-		kill(pid, SIGKILL);
-	}
-	else
-	{
-		if (execve(tokes[0], tokes, NULL) == -1)
-		{
-			err_num = errno;
-			handle_err(argv, err_num, tokes[0]);
-			_exit(1);
-		}
-	}
-}
-
-char *cat_err(char *temp, char *num, char *argv, char *var, char *token)
-{
-	temp = malloc(_strlen(argv) + 3);
-        _strcat(temp, argv);
-        _strcat(temp, ": ");
-        temp = _realloc(temp, _strlen(temp),
-                        _strlen(temp) + _strlen(num) + 2);
-        _strcat(temp, num);
-        _strcat(temp, ": ");
-	temp = _realloc(temp, _strlen(temp),
-			_strlen(temp) + _strlen(token) + 2);
-	_strcat(temp, token);
-	_strcat(temp, ": ");
-	temp = _realloc(temp, _strlen(temp),
-			_strlen(temp) + _strlen(var) + 1);
-	_strcat(temp, var);
-	return (temp);
-}
 void handle_err(char *argv, int err_num, char *token)
 {
 	char *temp = NULL;
