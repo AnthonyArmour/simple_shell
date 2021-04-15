@@ -9,13 +9,15 @@
 
 char *get_path(char **env, char *token)
 {
-	int ex = 0, num_of_paths = 0, tok_idx = 0, x = 0, final_path_idx = 0;
+	int ex = 0, num_of_paths = 0, tok_idx = 0, x = 0, final_path_idx = 0, signal1;
 	char *strp = NULL, *tmp = NULL;
 	char **paths = NULL;
-	struct stat stats;
 
-	if (stat(token, &stats) == 0)
+	signal1 = quick_stat(token);
+	if (signal1 == 1)
 		return (token);
+	if (signal1 == 2)
+		return (NULL);
 	ex = path_idx(env);
 	strp = _strdup((env[ex] + 5));
 	num_of_paths = get_size(strp, ':');
@@ -68,7 +70,7 @@ char *add_cwd(char *str)
 		buf = _realloc(buf, (n / 2), n);
 		buf = getcwd(buf, n);
 	}
-	temp = cwd_cat(temp, idx, buf, str);
+	temp = cwd_cat(temp, idx, buf, str, &sig);
 	if (str[_strlen(str) - 1] == ':')
 	{
 		_strcat(temp, str);
@@ -92,19 +94,20 @@ char *add_cwd(char *str)
  * @idx: index
  * @buf: buffer
  * @str: string
+ * @sig: signal
  * Return: temp
  */
 
-char *cwd_cat(char *temp, int idx, char *buf, char *str)
+char *cwd_cat(char *temp, int idx, char *buf, char *str, int *sig)
 {
-	int xx = _strlen(buf), x = 0, sig = 0;
+	int xx = 0, x = 0;
 
 	temp = malloc(_strlen(str) + _strlen(buf) + 1);
 	if (str[0] == ':')
 	{
 		_strcat(temp, buf);
 		_strcat(temp, str);
-		sig = 1;
+		*sig = 1;
 	}
 	else
 	{
@@ -112,11 +115,11 @@ char *cwd_cat(char *temp, int idx, char *buf, char *str)
 		{
 			if (str[idx] == ':' && str[idx + 1] == ':')
 			{
-				sig = 1;
+				*sig = 1;
 				break;
 			}
 		}
-		if (sig != 0)
+		if (*sig != 0)
 		{
 			for (x = 0; x <= idx; x++)
 				temp[xx] = str[x], xx++;

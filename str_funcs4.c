@@ -112,3 +112,31 @@ char *cat_err2(char *num, char *argv, char *var, char *token)
 	_strcat(temp, "\n");
 	return (temp);
 }
+
+/**
+ * quick_stat - stat check
+ * @token: token
+ * Return: stat
+ */
+
+int quick_stat(char *token)
+{
+	struct stat stats;
+	int x = 0, sig = 0, len = _strlen(token) - 1;
+
+	if (stat(token, &stats) == 0)
+	{
+		for (x = len; x >= 0; x--)
+		{
+			if (token[x] == '/' && token[x - 1] == '.')
+				sig = 1;
+		}
+		if (token[0] == '/' && (token[1] == 'b'
+				|| token[1] == 'u' || token[1] == 's'))
+			sig = 1;
+	}
+	if (token[0] == '/' && (token[1] != 'b'
+				&& token[1] != 'u' && token[1] != 's'))
+		sig = 2;
+	return (sig);
+}
