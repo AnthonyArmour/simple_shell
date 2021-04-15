@@ -108,6 +108,7 @@ void script_check(int argc, char *argv[], char **env, ll *alias_List,
 char *comment_check(char *buf);
 char *cat_err(char *num, char *argv, char *var, char *token);
 char *findcwd(char *buf, size_t n);
-char *cwd_cat(char *temp, int idx, char *buf, char *str);
+char *cwd_cat(char *temp, int idx, char *buf, char *str, int *sig);
 char *cat_err2(char *num, char *argv, char *var, char *token);
+int quick_stat(char *token);
 #endif
