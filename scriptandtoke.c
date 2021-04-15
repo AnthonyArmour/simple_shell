@@ -107,7 +107,7 @@ void exec_Cmd(char **tokes, char *argv, char **env)
 		{
 			err_num = errno;
 			handle_err(argv, err_num, tokes[0]);
-			_exit(1);
+			_exit(127);
 		}
 	}
 }

@@ -13,8 +13,8 @@ char *get_path(char **env, char *token)
 	char *strp = NULL, *tmp = NULL;
 	char **paths = NULL;
 
-	for (x = 0; token[x]; x++)
-		if (token[x] == '/')
+	for (ex = 0; token[ex]; ex++)
+		if (token[ex] == '/')
 			return (token);
 	ex = path_idx(env);
 	if (ex == -1)
