@@ -71,7 +71,8 @@ char *b_env(char **cmd_list, ll *alias_list,
 	    char *free_env_list, char **tokes, char *argv, char **env);
 char *_unsetenv(char **cmd_list, ll *alias_list,
 		char *free_env_list, char **tokes, char *argv, char **env);
-ll *_script(int fd, char *argv, char **env, ll *alias_List, char *free_env_list);
+ll *_script(int fd, char *argv, char **env,
+	ll *alias_List, char *free_env_list);
 ll *add_Alias(char *token, char *argv, ll *alias_List);
 ll *alias_Options(char *argv, char *cmd, ll *alias_List);
 void print_Alias(char *token, char *argv, ll *alias_List);
