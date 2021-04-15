@@ -2,7 +2,7 @@
 static char *free_env_list;
 static int err_Cnt;
 /**
- * main - basic shell
+ * main - basic shelll
  * @argc: num of cmd line args
  * @argv: args at cmd line
  * @env: environment data
