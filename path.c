@@ -9,18 +9,22 @@
 
 char *get_path(char **env, char *token)
 {
-	int ex = 0, num_of_paths = 0, tok_idx = 0, x = 0, final_path_idx = 0, signal1;
+	int ex = 0, num_of_paths = 0, tok_idx = 0, x = 0, final_path_idx = 0;
 	char *strp = NULL, *tmp = NULL;
 	char **paths = NULL;
 
-	signal1 = quick_stat(token);
-	if (signal1 == 1)
-		return (token);
-	if (signal1 == 2)
-		return (NULL);
+	for (x = 0; token[x]; x++)
+		if (token[x] == '/')
+			return (token);
 	ex = path_idx(env);
+	if (ex == -1)
+		return (token);
 	strp = _strdup((env[ex] + 5));
 	num_of_paths = get_size(strp, ':');
+	if (num_of_paths < 0)
+	{
+		free(strp);
+		return (token);	}
 	strp = add_cwd(strp);
 	paths = malloc(sizeof(char *) * (num_of_paths + 1));
 	if (!paths)
@@ -30,8 +34,7 @@ char *get_path(char **env, char *token)
 	for (x = 1; x < num_of_paths; x++)
 	{
 		paths[x] = _strtok(strp, &tok_idx, ':');
-		tok_idx++;
-	}
+		tok_idx++; }
 	paths[x] = NULL;
 	free(strp);
 	paths = append_paths(token, paths);
@@ -46,8 +49,7 @@ char *get_path(char **env, char *token)
 	else
 	{
 		free_2d(paths);
-		return (NULL);
-	}
+		return (token); }
 }
 
 /**
