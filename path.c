@@ -29,8 +29,7 @@ char *get_path(char **env, char *token)
 	paths = malloc(sizeof(char *) * (num_of_paths + 1));
 	if (!paths)
 		exit(98);
-	paths[x] = _strtok(strp, &tok_idx, ':');
-	tok_idx++;
+	paths[x] = _strtok(strp, &tok_idx, ':'), tok_idx++;
 	for (x = 1; x < num_of_paths; x++)
 	{
 		paths[x] = _strtok(strp, &tok_idx, ':');
