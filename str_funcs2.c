@@ -29,6 +29,8 @@ size_t get_size(char *str, char delim)
 {
 	size_t x = 0, count = 0;
 
+	if (str[x] == '\0')
+		return (-1);
 	for (x = 0; str[x]; x++)
 	{
 		if (str[x] == delim || str[x + 1] == '\0')
