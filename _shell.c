@@ -172,6 +172,7 @@ my_ret parser2(char **cmd_List, char *argv, char **env, my_ret my_lists)
 		{
 			my_lists.alias_List = alias_Options(argv, cmd_List[x], my_lists.alias_List);
 			free(tokes[0]);
+			free(tokes);
 			continue;
 		}
 		for (i = 1; i < words; i++)
