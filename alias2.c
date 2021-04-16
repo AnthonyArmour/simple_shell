@@ -24,7 +24,7 @@ char *alias_Check(char *cmd_Str, ll *alias_List, char *argv)
 	if (alias_Cmd != NULL)
 	{
 		new_Cmd = reset_Cmd(alias_Cmd, argv, cmd_Str, idx, len);
-		free(cmd_Str);
+		free(alias_Cmd);
 		free_2d(tokes);
 		return (new_Cmd);
 	}
@@ -112,7 +112,7 @@ char *rep_Alias(ll *alias_List, char *argv, char **tokes, int *idx, int *len)
 		{
 			if ((_strncmp(tokes[(*idx)], alias_List->str, (*len) + 1)) == 0)
 			{
-				cmd_Str = _strdup(alias_List->str);
+				cmd_Str = _strdup(alias_List->str + ((*len) + 2));
 				break;
 			}
 			alias_List = alias_List->next;
@@ -121,17 +121,14 @@ char *rep_Alias(ll *alias_List, char *argv, char **tokes, int *idx, int *len)
 		{
 			if ((_strncmp(tokes[(*idx)], alias_List->str, (*len) + 1)) == 0)
 			{
-				cmd_Str = _strdup(alias_List->str);
+				cmd_Str = _strdup(alias_List->str + ((*len) + 2));
 			}
 		}
 		if (cmd_Str != NULL)
 			break;
 	}
 	if (cmd_Str != NULL)
-	{
-		cmd_Str += ((*len) + 2);
 		cmd_Str[_strlen(cmd_Str) - 1] = '\0';
-	}
 	return (cmd_Str);
 }
 
