@@ -53,7 +53,7 @@ void print_Alias(char *token, char *argv, ll *alias_List)
 		}
 	}
 	if (signal == 0)
-		printf("OOPSIES\n");
+		perror(argv);
 }
 
 

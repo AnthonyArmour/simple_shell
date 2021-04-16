@@ -5,14 +5,13 @@
  * @argc: argc
  * @argv: argv
  * @env: env
- * @alias_List: list of aliases
- * @free_env_list: list of env variables to be freed
+ * @my_lists: lists for env and aliases
  * @Cmd: Command
  * Return: void
  */
 
-void script_check(int argc, char *argv[], char **env, ll *alias_List,
-				char *free_env_list, char **Cmd)
+void script_check(int argc, char *argv[], char **env, my_ret my_lists
+		  , char **Cmd)
 {
 	int fd;
 
@@ -21,9 +20,9 @@ void script_check(int argc, char *argv[], char **env, ll *alias_List,
 		fd = open(argv[1], O_RDONLY);
 		if (fd == -1)
 			exit(22);
-		alias_List = _script(fd, argv[0], env, alias_List, free_env_list);
-		free_env(env, free_env_list);
-		free_rm(Cmd, alias_List);
+		my_lists = _script(fd, argv[0], env, my_lists);
+		free_env(env, my_lists.free_env_list);
+		free_rm(Cmd, my_lists.alias_List);
 		exit(0);
 	}
 }

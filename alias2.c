@@ -10,7 +10,7 @@
 
 char *alias_Check(char *cmd_Str, ll *alias_List, char *argv)
 {
-	int i = 0, tok_idx = 0, chars = 0, words = 0, idx = 0, len = 0, x = 0;
+	int i = 0, tok_idx = 0, chars = 0, words = 0, idx = 0, len = 0;
 	char **tokes = NULL, *alias_Cmd = NULL, *new_Cmd = NULL;
 
 	dim2(cmd_Str, &chars, &words, argv);
@@ -24,15 +24,13 @@ char *alias_Check(char *cmd_Str, ll *alias_List, char *argv)
 	if (alias_Cmd != NULL)
 	{
 		new_Cmd = reset_Cmd(alias_Cmd, argv, cmd_Str, idx, len);
-		free(alias_Cmd);
+		free(cmd_Str);
+		free_2d(tokes);
 		return (new_Cmd);
 	}
 	else
 	{
-		for (x = 0; tokes[x]; x++)
-			free(tokes[x]);
-		free(tokes);
-		free(alias_Cmd);
+		free_2d(tokes);
 		return (cmd_Str);
 	}
 }
@@ -108,8 +106,8 @@ char *rep_Alias(ll *alias_List, char *argv, char **tokes, int *idx, int *len)
 	for ((*idx) = 0; tokes[(*idx)]; (*idx)++)
 	{
 		*len = _strlen(tokes[(*idx)]);
-		tokes[(*idx)] = _realloc(tokes[(*idx)], (*len), (*len) + 1);
-		_strcat(tokes[(*idx)], "=\0");
+		tokes[(*idx)] = _realloc(tokes[(*idx)], (*len), (*len) + 2);
+		_strcat(tokes[(*idx)], "=");
 		while (alias_List->next != NULL)
 		{
 			if ((_strncmp(tokes[(*idx)], alias_List->str, (*len) + 1)) == 0)
@@ -134,7 +132,6 @@ char *rep_Alias(ll *alias_List, char *argv, char **tokes, int *idx, int *len)
 		cmd_Str += ((*len) + 2);
 		cmd_Str[_strlen(cmd_Str) - 1] = '\0';
 	}
-	free_2d(tokes);
 	return (cmd_Str);
 }
 

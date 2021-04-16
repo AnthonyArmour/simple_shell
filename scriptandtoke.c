@@ -38,13 +38,11 @@ char *_strtok(char *str, int *index, char delim)
  * @fd: File descriptor for script
  * @argv: Arguments
  * @env: Environment
- * @alias_List: list of aliases
- * @free_env_list: env vars to be freed
+ * @my_lists: lists for env and aliases
  * Return: void
  */
 
-ll *_script(int fd, char *argv, char **env, ll *alias_List
-	    , char *free_env_list)
+my_ret _script(int fd, char *argv, char **env, my_ret my_lists)
 {
 	int x = 0, xx = 0, buflen = 0, newlen = 0;
 	char *buf = NULL, tmp[1024];
@@ -72,12 +70,12 @@ ll *_script(int fd, char *argv, char **env, ll *alias_List
 	if (x != 0)
 	{
 		Cmd = parser1(buf, argv);
-		alias_List = parser2(Cmd, argv, env, alias_List, free_env_list);
+		my_lists = parser2(Cmd, argv, env, my_lists);
 		for (x = 0; Cmd[x]; x++)
 			free(Cmd[x]);
 		free(Cmd);
 	}
-	return (alias_List);
+	return (my_lists);
 }
 
 /**

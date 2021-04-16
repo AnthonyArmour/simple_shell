@@ -63,13 +63,14 @@ char *add_cwd(char *str)
 	size_t n = 20;
 	char *buf = NULL, *temp = NULL;
 
+
 	buf = malloc(n);
-	buf = getcwd(buf, n);
-	while (!buf)
+	while (getcwd(buf, n) == NULL)
 	{
+		free(buf);
+		buf = NULL;
 		n = n * 2;
-		buf = _realloc(buf, (n / 2), n);
-		buf = getcwd(buf, n);
+		buf = malloc(n);
 	}
 	temp = cwd_cat(temp, idx, buf, str, &sig);
 	if (str[_strlen(str) - 1] == ':')

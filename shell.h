@@ -24,6 +24,16 @@ typedef struct linked_list
 	struct linked_list *next;
 } ll;
 /**
+ * struct myreturns - holds data
+ * @alias_List: list of aliases
+ * @free_env_list: list of envs to be freed
+ */
+typedef struct myreturns
+{
+	ll *alias_List;
+	char *free_env_list;
+} my_ret;
+/**
  * struct built_in - built_in struct
  * @var: built_in command
  * @f: function pointer
@@ -44,8 +54,7 @@ char *_strcpy(char *dest, char *src);
 int _strlen(char *s);
 char *_strdup(char *str);
 void dim2(char *str, int *chars, int *words, char *argv);
-ll *parser2(char **cmd_List, char *argv, char **env, ll *alias_List
-	    , char *free_env_list);
+my_ret parser2(char **cmd_List, char *argv, char **env, my_ret my_lists);
 char **parser1(char *cmd_Str, char *argv);
 void StrDimensions(char *cmd_Str, char *argv,
 	 int *cmd_Str_Len, int *cmd_Count);
@@ -71,8 +80,7 @@ char *b_env(char **cmd_list, ll *alias_list,
 	    char *free_env_list, char **tokes, char *argv, char **env);
 char *_unsetenv(char **cmd_list, ll *alias_list,
 		char *free_env_list, char **tokes, char *argv, char **env);
-ll *_script(int fd, char *argv, char **env,
-	ll *alias_List, char *free_env_list);
+my_ret _script(int fd, char *argv, char **env, my_ret my_lists);
 ll *add_Alias(char *token, char *argv, ll *alias_List);
 ll *alias_Options(char *argv, char *cmd, ll *alias_List);
 void print_Alias(char *token, char *argv, ll *alias_List);
@@ -89,8 +97,8 @@ void handle_err(char *argv, int err_num, char *token);
 char *add_cwd(char *str);
 char *_cd(char **cmd_list, ll *alias_list,
 	  char *free_env_list, char **tokes, char *argv, char **env);
-char *set_pwd(char *str, char **env);
-void set_old_pwd(char *str, char **env);
+char *set_pwd(char *str, char **env, char *free_env_list);
+void set_old_pwd(char *str, char **env, char *free_env_list);
 char *get_old_dir(char *old, char **env);
 char *get_home(char *home, char **env);
 void free_env(char **env, char *free_env_list);
@@ -104,8 +112,8 @@ int myAtoi(char *s);
 char *_strcat(char *str, char *str2);
 int _strcmp(char *s1, char *s2);
 void free_2d(char **arr);
-void script_check(int argc, char *argv[], char **env, ll *alias_List,
-			 char *free_env_list, char **Cmd);
+void script_check(int argc, char *argv[], char **env, my_ret my_lists
+		  , char **Cmd);
 char *comment_check(char *buf);
 char *cat_err(char *num, char *argv, char *var, char *token);
 char *findcwd(char *buf, size_t n);

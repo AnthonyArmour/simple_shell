@@ -13,11 +13,13 @@ int main(int argc, char *argv[], char *env[])
 	char *command = NULL;
 	int ttrue = 1, cmd_Count = 0, mode;
 	char **Cmd = NULL;
-	ll *alias_List = NULL;
+	my_ret my_lists;
 
+	my_lists.free_env_list = NULL;
+	my_lists.alias_List = NULL;
 	free_env_list = NULL;
 	err_Cnt = 1;
-	script_check(argc, argv, env, alias_List, free_env_list, Cmd);
+	script_check(argc, argv, env, my_lists, Cmd);
 	mode = isatty(STDIN_FILENO);
 	signal(SIGINT, SIG_IGN);
 	while (ttrue)
@@ -42,8 +44,7 @@ int main(int argc, char *argv[], char *env[])
 		{
 			Cmd = parser1(command, argv[0]);
 			free(command);
-			alias_List = parser2(Cmd, argv[0], env, alias_List
-					     , free_env_list);
+			my_lists = parser2(Cmd, argv[0], env, my_lists);
 			free_2d(Cmd);
 		}
 		err_Cnt++;
@@ -150,13 +151,11 @@ char **parser1(char *cmd_Str, char *argv)
  * @cmd_List: 2d array of strings
  * @argv: argv[0]
  * @env: environ
- * @alias_List: list of aliases
- * @free_env_list: list of env vars to be freed
+ * @my_lists: return values
  * Return: void. Passes tokens to execution func
  */
 
-ll *parser2(char **cmd_List, char *argv, char **env, ll *alias_List
-	    , char *free_env_list)
+my_ret parser2(char **cmd_List, char *argv, char **env, my_ret my_lists)
 {
 	int x = 0, i = 0, tok_idx = 0, chars = 0, words = 0;
 	int ret = 0;
@@ -165,21 +164,21 @@ ll *parser2(char **cmd_List, char *argv, char **env, ll *alias_List
 
 	for (x = 0; cmd_List[x]; x++)
 	{
-		cmd_List[x] = alias_Check(cmd_List[x], alias_List, argv);
+		cmd_List[x] = alias_Check(cmd_List[x], my_lists.alias_List, argv);
 		dim2(cmd_List[x], &chars, &words, argv);
 		tokes = malloc(sizeof(char *) * chars + words);
 		tokes[0] = _strtok(cmd_List[x], &tok_idx, ' ');
 		if (_strcmp(tokes[0], "alias") == 0)
 		{
-			alias_List = alias_Options(argv, cmd_List[x], alias_List);
-			free_2d(tokes);
+			my_lists.alias_List = alias_Options(argv, cmd_List[x], my_lists.alias_List);
+			free(tokes[0]);
 			continue;
 		}
 		for (i = 1; i < words; i++)
 			tokes[i] = _strtok(cmd_List[x], &tok_idx, ' ');
 		tokes[i] = NULL;
-		free_env_list = builtin(cmd_List, alias_List,
-					free_env_list, tokes, argv, env, &ret);
+		my_lists.free_env_list = builtin(cmd_List, my_lists.alias_List,
+					my_lists.free_env_list, tokes, argv, env, &ret);
 		if (ret == 0)
 		{
 			our_path = get_path(env, tokes[0]);
@@ -196,7 +195,7 @@ ll *parser2(char **cmd_List, char *argv, char **env, ll *alias_List
 		free_2d(tokes);
 		chars = 0, words = 0, tok_idx = 0;
 	}
-return (alias_List);
+return (my_lists);
 }
 
 /**

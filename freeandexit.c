@@ -9,31 +9,29 @@
 
 void free_env(char **env, char *free_env_list)
 {
-	int idx = 0, x = 0, sig = 0, t = 0;
+	int idx = 0, x = 0, tokx = 0, chars = 0, words = 0;
+	char **free_str = NULL;
 
 	if (!free_env_list)
 		return;
-	printf("LIST IS: %s\n\n\n", free_env_list);
-	while (free_env_list[x])
+	dim2(free_env_list, &chars, &words, "str");
+	free_str = malloc(sizeof(char *) * chars + words);
+	for (x = 0; x < words; x++)
+		free_str[x] = _strtok(free_env_list, &tokx, ' ');
+	free_str[x] = NULL;
+	for (idx = 0; env[idx]; idx++)
 	{
-		while (t < 12)
+		for (x = 0; free_str[x]; x++)
 		{
-			if (_strncmp((free_env_list + x), env[idx],
-				xstrlen(free_env_list + x)) == 0)
+			if (_strncmp(free_str[x], env[idx],
+				     _strlen(free_str[x])) == 0)
 			{
 				free(env[idx]);
-				idx = 0;
-				x += xstrlen(free_env_list + x);
-				sig = 1;
 				break;
 			}
-			idx++;
-			t++;
 		}
-		if (sig == 0)
-			idx = 0, x++;
-		sig = 0;
 	}
+	free_2d(free_str);
 	free(free_env_list);
 }
 

@@ -17,11 +17,13 @@ char *_cd(char **cmd_list, ll *alias_list,
 	int err_num;
 	size_t n = 15;
 	char *buf = NULL;
-	char *temp = NULL, *old_pwd = NULL, *pwd = "PWD=", *path = NULL;
+	char *temp, *old_pwd = NULL, *path = NULL, *pwd = "PWD=";
 
 	(void)cmd_list;
 	(void)alias_list;
+	temp = NULL;
 	temp = malloc(5);
+	temp[0] = '\0';
 	_strcat(temp, pwd);
 	if (!tokes[1])
 		path = get_home(path, env);
@@ -29,7 +31,7 @@ char *_cd(char **cmd_list, ll *alias_list,
 		path = get_old_dir(path, env);
 	else
 	{
-		path = malloc(_strlen(tokes[1]) + 1);
+		path = malloc(_strlen(tokes[1]) + 1), path[0] = '\0';
 		_strcat(path, tokes[1]);
 	}
 	if (chdir(path) < 0)
@@ -40,21 +42,19 @@ char *_cd(char **cmd_list, ll *alias_list,
 	else
 	{
 		buf = findcwd(buf, n);
-		temp = _realloc(temp, 5, _strlen(buf) + 5);
-			temp = _strcat(temp, buf);
+		temp = _realloc(temp, 5, _strlen(buf) + 6);
+		temp = _strcat(temp, buf);
 		free(buf);
-		printf("BEFORE SETPWD\n");
-		old_pwd = set_pwd(temp, env);
-		printf("BEFORE SETOLDPWD\n");
-		set_old_pwd(old_pwd, env);
-		printf("BEFORE FREE ENV LIST\n");
+		old_pwd = set_pwd(temp, env, free_env_list);
+		set_old_pwd(old_pwd, env, free_env_list);
 		free_env_list = add_to_free_env(free_env_list, "OLDPWD");
 		free_env_list = add_to_free_env(free_env_list, "PWD");
+
 	}
 	free(temp);
 	free(path);
-	return (free_env_list);
-}
+	path = NULL;
+	return (free_env_list); }
 
 /**
  * findcwd - finds PWD
@@ -65,13 +65,14 @@ char *_cd(char **cmd_list, ll *alias_list,
 
 char *findcwd(char *buf, size_t n)
 {
+
 	buf = malloc(n);
-	buf = getcwd(buf, n);
-	while (!buf)
+	while (getcwd(buf, n) == NULL)
 	{
+		free(buf);
+		buf = NULL;
 		n = n * 2;
-		buf = _realloc(buf, (n / 2), n);
-		buf = getcwd(buf, n);
+		buf = malloc(n);
 	}
 	return (buf);
 }
@@ -104,10 +105,11 @@ char *get_old_dir(char *old, char **env)
  * set_old_pwd - sets old pwd
  * @str: str to hold env idx
  * @env: environment
+ * @free_env_list: list of envs to free
  * Return: void
  */
 
-void set_old_pwd(char *str, char **env)
+void set_old_pwd(char *str, char **env, char *free_env_list)
 {
 	int idx = 0;
 
@@ -117,20 +119,25 @@ void set_old_pwd(char *str, char **env)
 			break;
 		idx++;
 	}
-	env[idx] = str;
+	if (free_env_list)
+		free(env[idx]);
+	env[idx] = _strdup(str);
+	free(str);
+	str = NULL;
 }
 
 /**
  * set_pwd - sets pwd
  * @str: str to hold env idx
  * @env: environment
+ * @free_env_list: list of envs to free
  * Return: old pwd
  */
 
-char *set_pwd(char *str, char **env)
+char *set_pwd(char *str, char **env, char *free_env_list)
 {
-	int idx = 0, x = 0, xx = 0;
-	char *old = NULL, *temp = "OLDPWD=";
+	int idx = 0;
+	char *old = NULL, *pwd = NULL;
 
 	while (env[idx])
 	{
@@ -138,12 +145,17 @@ char *set_pwd(char *str, char **env)
 			break;
 		idx++;
 	}
-	old = malloc(_strlen(env[idx]) + 4);
-	for (x = 0; temp[x]; x++)
-		old[xx] = temp[x], xx++;
-	for (x = 4; env[idx][x]; x++)
-		old[xx] = env[idx][x], xx++;
-	old[xx] = '\0';
-	env[idx] = str;
+	old = malloc(_strlen(env[idx]) + 5);
+	old[0] = '\0';
+	_strcat(old, "OLDPWD=");
+	_strcat(old, env[idx] + 4);
+	if (free_env_list)
+		free(env[idx]);
+	pwd = malloc(_strlen(str) + 5);
+	pwd[0] = '\0';
+	_strcat(pwd, str);
+	env[idx] = _strdup(pwd);
+	free(pwd);
+	pwd = NULL;
 	return (old);
 }
