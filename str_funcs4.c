@@ -14,15 +14,23 @@ void script_check(int argc, char *argv[], char **env, my_ret my_lists
 		  , char **Cmd)
 {
 	int fd;
+	char *tmp = ": 0: Can't open ";
 
+	(void)Cmd;
 	if (argc == 2)
 	{
 		fd = open(argv[1], O_RDONLY);
 		if (fd == -1)
-			exit(22);
+		{
+			write(STDERR_FILENO, argv[0], _strlen(argv[0]));
+			write(STDERR_FILENO, tmp, _strlen(tmp));
+			write(STDERR_FILENO, argv[1], _strlen(argv[1]));
+			write(STDERR_FILENO, "\n", 1);
+			exit(127);
+		}
 		my_lists = _script(fd, argv[0], env, my_lists);
 		free_env(env, my_lists.free_env_list);
-		free_rm(Cmd, my_lists.alias_List);
+		free_list(my_lists.alias_List);
 		exit(0);
 	}
 }
