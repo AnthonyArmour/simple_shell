@@ -155,6 +155,7 @@ ll *alias_Options(char *argv, char *cmd, ll *alias_List)
 	if (tokes[1] == NULL)
 	{
 		print_list(alias_List);
+		free_2d(tokes);
 		return (alias_List);
 	}
 	for (x = 1; tokes[x]; x++)

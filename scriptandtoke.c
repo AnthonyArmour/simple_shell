@@ -54,7 +54,7 @@ my_ret _script(int fd, char *argv, char **env, my_ret my_lists)
 		if (buf != NULL)
 			buflen = _strlen(buf);
 		newlen = buflen + count;
-		buf = _realloc(buf, buflen, newlen);
+		buf = _realloc(buf, buflen, newlen + 1);
 		for (x = 0; x < count; x++)
 		{
 			buf[xx] = tmp[x];
@@ -62,6 +62,8 @@ my_ret _script(int fd, char *argv, char **env, my_ret my_lists)
 		}
 		buf[xx] = '\0';
 	}
+	if (!buf)
+		exit(0);
 	for (x = 0; buf[x]; x++)
 	{
 		if (buf[x] == '\n')
@@ -70,6 +72,7 @@ my_ret _script(int fd, char *argv, char **env, my_ret my_lists)
 	if (x != 0)
 	{
 		Cmd = parser1(buf, argv);
+		free(buf);
 		my_lists = parser2(Cmd, argv, env, my_lists);
 		for (x = 0; Cmd[x]; x++)
 			free(Cmd[x]);

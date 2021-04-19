@@ -58,7 +58,7 @@ my_ret parser2(char **cmd_List, char *argv, char **env, my_ret my_lists);
 char **parser1(char *cmd_Str, char *argv);
 void StrDimensions(char *cmd_Str, char *argv,
 	 int *cmd_Str_Len, int *cmd_Count);
-char *read_Cmd(int mode);
+char *read_Cmd(int mode, int *sig);
 void exec_Cmd(char **tokes, char *argv, char **env);
 char *_realloc(char *ptr, unsigned int old_size, unsigned int new_size);
 void print_Prompt1(void);

@@ -11,29 +11,28 @@ static int err_Cnt;
 int main(int argc, char *argv[], char *env[])
 {
 	char *command = NULL;
-	int ttrue = 1, cmd_Count = 0, mode;
+	int ttrue = 1, cmd_Count = 0, mode, sig = 0;
 	char **Cmd = NULL;
 	my_ret my_lists;
 
-	my_lists.free_env_list = NULL;
-	my_lists.alias_List = NULL;
-	free_env_list = NULL;
-	err_Cnt = 1;
-	script_check(argc, argv, env, my_lists, Cmd);
-	mode = isatty(STDIN_FILENO);
+	my_lists.free_env_list = NULL, my_lists.alias_List = NULL;
+	free_env_list = NULL, err_Cnt = 1;
+	script_check(argc, argv, env, my_lists, Cmd), mode = isatty(STDIN_FILENO);
 	signal(SIGINT, SIG_IGN);
 	while (ttrue)
 	{
 		if (mode)
 			print_Prompt1();
-		command = read_Cmd(mode);
-		if (!command)
+		command = read_Cmd(mode, &sig);
+		if (!command || sig == 1)
 		{
 			if (mode)
 			{free(command);
 				continue; }
 			else
 			{free(command);
+				free_env(env, my_lists.free_env_list);
+				free_list(my_lists.alias_List);
 				exit(0); }
 		}
 		cmd_Count = _strlen(command);
@@ -49,16 +48,18 @@ int main(int argc, char *argv[], char *env[])
 		}
 		err_Cnt++;
 	}
+	free_env(env, my_lists.free_env_list), free_list(my_lists.alias_List);
 	return (0);
 }
 
 /**
  * read_Cmd - reads command into string
  * @mode: mode
+ * @sig: signal
  * Return: string
  */
 
-char *read_Cmd(int mode)
+char *read_Cmd(int mode, int *sig)
 {
 	size_t bufsize = 1024;
 	ssize_t cmd_Check = 1;
@@ -94,8 +95,7 @@ char *read_Cmd(int mode)
 			return (cmd_Str); }
 		ptr_len += buf_len; }
 	if (cmd_Check == -1)
-	{free(buf);
-		exit(0); }
+		*sig = 1;
 	free(buf);
 	return (cmd_Str);
 }
